@@ -2,13 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- ===== SEO ===== -->
     <title>Price Point · Premium Electronics Kenya</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9089705612009536"
-     crossorigin="anonymous"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="description" content="Price Point Kenya - Shop premium electronics including phones, laptops, and accessories. Best prices in Kenya with fast delivery and warranty." />
+    <meta name="keywords" content="electronics, phones, laptops, Kenya, online store, gadgets, premium tech" />
+    <link rel="canonical" href="https://www.apexbuilt.site" />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Price Point · Premium Electronics Kenya" />
+    <meta property="og:description" content="Shop premium electronics in Kenya. Phones, laptops, accessories with fast delivery." />
+    <meta property="og:image" content="https://www.apexbuilt.site/static/logo.png" />
+    <meta property="og:url" content="https://www.apexbuilt.site" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Price Point · Premium Electronics Kenya" />
+    <meta name="twitter:description" content="Shop premium electronics in Kenya. Phones, laptops, accessories with fast delivery." />
+    <meta name="twitter:image" content="https://www.apexbuilt.site/static/logo.png" />
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+    
+    <!-- ===== GOOGLE ADSENSE ===== -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9089705612009536" crossorigin="anonymous"></script>
+    
+    <!-- ===== STYLES (Optimized) ===== -->
+    <script src="https://cdn.tailwindcss.com" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    
     <style>
         * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #f8fafc; color: #0f172a; overflow-x: hidden; }
@@ -17,10 +42,7 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes cardPop { 0% { opacity: 0; transform: scale(0.95) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-        @keyframes zoomIn {
-            from { transform: scale(1.1); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
+        @keyframes zoomIn { from { transform: scale(1.1); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
         .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
         .animate-card-pop { animation: cardPop 0.4s ease-out forwards; }
@@ -55,7 +77,7 @@
             right: -8px;
         }
 
-        /* ===== HERO - BACKGROUND IMAGE ===== */
+        /* ===== HERO ===== */
         .hero-section {
             position: relative;
             min-height: 420px;
@@ -68,9 +90,8 @@
         .hero-section .hero-bg {
             position: absolute;
             inset: 0;
-            background: 
-                linear-gradient(135deg, rgba(15,23,42,0.75) 0%, rgba(15,23,42,0.5) 50%, rgba(15,23,42,0.3) 100%),
-                url('https://images.unsplash.com/photo-1498049794561-7780e7231661?w=1600&h=600&fit=crop') center/cover no-repeat;
+            background: linear-gradient(135deg, rgba(15,23,42,0.75) 0%, rgba(15,23,42,0.5) 50%, rgba(15,23,42,0.3) 100%),
+                        url('https://images.unsplash.com/photo-1498049794561-7780e7231661?w=1600&h=600&fit=crop&auto=format') center/cover no-repeat;
             z-index: 0;
         }
         .hero-section .hero-content {
@@ -128,10 +149,7 @@
             text-decoration: none;
             box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         }
-        .hero-btn-primary:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
-        }
+        .hero-btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
         .hero-btn-secondary {
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
@@ -147,10 +165,7 @@
             gap: 8px;
             text-decoration: none;
         }
-        .hero-btn-secondary:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-3px) scale(1.02);
-        }
+        .hero-btn-secondary:hover { background: rgba(255,255,255,0.2); transform: translateY(-3px) scale(1.02); }
 
         .hero-features {
             display: flex;
@@ -159,13 +174,7 @@
             gap: 20px;
             margin-top: 24px;
         }
-        .hero-features span {
-            color: rgba(255,255,255,0.75);
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .hero-features span { color: rgba(255,255,255,0.75); font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
         .hero-features span i { color: #60a5fa; }
 
         /* ===== SEARCH BAR ===== */
@@ -177,10 +186,7 @@
             transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
-        .search-container:focus-within {
-            border-color: #2563eb;
-            box-shadow: 0 4px 20px rgba(37,99,235,0.08);
-        }
+        .search-container:focus-within { border-color: #2563eb; box-shadow: 0 4px 20px rgba(37,99,235,0.08); }
         .search-input {
             width: 100%;
             padding: 10px 14px 10px 40px;
@@ -247,14 +253,11 @@
             gap: 4px;
             flex-shrink: 0;
             -webkit-tap-highlight-color: transparent;
+            min-height: 36px;
         }
         .category-pill:active { transform: scale(0.96); }
         .category-pill:hover { background: #f1f5f9; transform: translateY(-1px); }
-        .category-pill.active {
-            background: #1e293b;
-            color: white;
-            border-color: #1e293b;
-        }
+        .category-pill.active { background: #1e293b; color: white; border-color: #1e293b; }
         .category-pill .count {
             background: rgba(255,255,255,0.15);
             padding: 0px 6px;
@@ -337,7 +340,6 @@
         .product-card .badge.new { background: #10b981; }
         .product-card .badge.trending { background: #8b5cf6; }
 
-        /* ===== PRODUCT DESCRIPTION & SPECS ===== */
         .product-description {
             color: #64748b;
             font-size: 0.78rem;
@@ -364,17 +366,8 @@
             font-weight: 500;
             color: #475569;
         }
-        .product-specs .spec-tag i {
-            color: #2563eb;
-            margin-right: 3px;
-            font-size: 0.5rem;
-        }
-        .product-specs .spec-more {
-            font-size: 0.6rem;
-            color: #94a3b8;
-            display: inline-flex;
-            align-items: center;
-        }
+        .product-specs .spec-tag i { color: #2563eb; margin-right: 3px; font-size: 0.5rem; }
+        .product-specs .spec-more { font-size: 0.6rem; color: #94a3b8; display: inline-flex; align-items: center; }
 
         .btn-add-to-cart {
             background: #f1f5f9;
@@ -392,17 +385,11 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
+            min-height: 44px;
         }
         .btn-add-to-cart:active { transform: scale(0.96); }
-        .btn-add-to-cart:hover:not(:disabled) {
-            background: #2563eb;
-            color: white;
-        }
-        .btn-add-to-cart:disabled {
-            background: #e2e8f0;
-            color: #94a3b8;
-            cursor: not-allowed;
-        }
+        .btn-add-to-cart:hover:not(:disabled) { background: #2563eb; color: white; }
+        .btn-add-to-cart:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
 
         /* ===== SORT SELECT ===== */
         .sort-select {
@@ -415,11 +402,9 @@
             transition: all 0.3s ease;
             color: #0f172a;
             font-weight: 500;
+            min-height: 36px;
         }
-        .sort-select:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37,99,235,0.06);
-        }
+        .sort-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.06); }
 
         /* ===== PRODUCT GRID ===== */
         .product-grid {
@@ -429,13 +414,7 @@
         }
         .product-grid .product-card { animation: cardPop 0.4s ease-out forwards; }
 
-        .no-products {
-            text-align: center;
-            padding: 40px 20px;
-            background: white;
-            border-radius: 16px;
-            border: 1px solid #eef2f6;
-        }
+        .no-products { text-align: center; padding: 40px 20px; background: white; border-radius: 16px; border: 1px solid #eef2f6; }
         .no-products i { font-size: 2.5rem; color: #cbd5e1; margin-bottom: 12px; }
         .no-products h3 { font-weight: 600; color: #0f172a; font-size: 1.1rem; margin-bottom: 4px; }
         .no-products p { color: #94a3b8; font-size: 0.85rem; }
@@ -532,14 +511,14 @@
             .product-card .product-price { font-size: 0.85rem; }
             .product-card { padding: 8px; border-radius: 10px; }
             .product-card .badge { font-size: 0.45rem; padding: 1px 8px; top: 6px; left: 6px; }
-            .btn-add-to-cart { font-size: 0.65rem; padding: 6px; }
-            .category-pill { font-size: 0.6rem; padding: 4px 10px; }
+            .btn-add-to-cart { font-size: 0.65rem; padding: 6px; min-height: 36px; }
+            .category-pill { font-size: 0.6rem; padding: 4px 10px; min-height: 30px; }
             .category-pill .count { font-size: 0.5rem; padding: 0px 4px; }
             .search-input { font-size: 0.8rem; padding: 6px 10px 6px 32px; }
             .search-container { padding: 6px 10px; border-radius: 10px; }
             .search-icon { left: 10px; font-size: 0.75rem; }
             .search-clear { font-size: 0.7rem; right: 8px; }
-            .sort-select { font-size: 0.65rem; padding: 4px 10px; }
+            .sort-select { font-size: 0.65rem; padding: 4px 10px; min-height: 30px; }
             .product-rating { font-size: 0.55rem; }
             .hero-badge { font-size: 0.65rem; padding: 3px 12px; }
             .bundle-card { padding: 12px; }
@@ -558,254 +537,272 @@
             .product-card .product-price { font-size: 0.75rem; }
             .product-card .badge { display: none; }
             .category-pill i { display: none; }
-            .category-pill { font-size: 0.5rem; padding: 3px 8px; }
+            .category-pill { font-size: 0.5rem; padding: 3px 8px; min-height: 26px; }
             .hero-title { font-size: 1.2rem; }
+        }
+
+        /* ===== SR ONLY (Screen Reader Only) ===== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
     </style>
 </head>
 <body>
 
     <!-- ===== HEADER ===== -->
-    <header class="app-header" id="mainHeader">
+    <header class="app-header" id="mainHeader" role="banner">
         <div class="container-full mx-auto flex items-center justify-between h-14">
-            <a href="/" class="flex items-center gap-2">
+            <a href="/" class="flex items-center gap-2" aria-label="Price Point Home">
                 <i class="fas fa-bolt text-blue-600 text-xl"></i>
                 <span class="brand-text">Price<span>Point</span></span>
             </a>
             <div class="flex items-center gap-3">
-                <a href="/cart" class="relative text-gray-700 hover:text-blue-600 transition">
+                <a href="/cart" class="relative text-gray-700 hover:text-blue-600 transition" aria-label="Shopping cart">
                     <i class="fas fa-shopping-bag text-lg"></i>
-                    <span class="cart-count" id="cartCount">0</span>
+                    <span class="cart-count" id="cartCount" aria-label="Cart items">0</span>
                 </a>
-                <a href="#shop" class="bg-[#1e293b] text-white px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-[#0f172a] transition">
+                <a href="#shop" class="bg-[#1e293b] text-white px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-[#0f172a] transition" aria-label="Go to shop">
                     <i class="fas fa-plus"></i> Shop
                 </a>
             </div>
         </div>
     </header>
 
-    <!-- ===== HERO ===== -->
-    <section class="hero-section">
-        <div class="hero-bg"></div>
-        <div class="hero-content animate-zoom">
-            <div class="hero-badge animate-fade-in">
-                <i class="fas fa-kenya-flag text-sm"></i> Kenya's Trusted Tech Store
-            </div>
-            <h1 class="hero-title animate-slide-up">
-                Premium Tech,<br><span class="highlight">Ready for Kenya.</span>
-            </h1>
-            <p class="hero-subtitle animate-slide-up" style="animation-delay:0.1s;">
-                Shop genuine phones, laptops, audio, and accessories with fast delivery across Kenya.
-            </p>
-            <div class="flex flex-wrap justify-center gap-3 animate-slide-up" style="animation-delay:0.2s;">
-                <a href="#shop" class="hero-btn-primary">
-                    <i class="fas fa-bolt"></i> Shop Now
-                </a>
-                <a href="#bundles" class="hero-btn-secondary">
-                    <i class="fas fa-tag"></i> View Deals
-                </a>
-            </div>
-            <div class="hero-features animate-fade-in" style="animation-delay:0.3s;">
-                <span><i class="fas fa-truck"></i> Same-Day Nairobi</span>
-                <span><i class="fas fa-credit-card"></i> Secure Payment</span>
-                <span><i class="fas fa-shield-alt"></i> Official Warranty</span>
-            </div>
-        </div>
-    </section>
+    <!-- ===== MAIN CONTENT ===== -->
+    <main id="main-content" role="main">
 
-    <!-- ===== SEARCH & FILTERS ===== -->
-    <section class="py-3 bg-white border-b border-gray-100 sticky top-14 z-40" id="categorySection">
-        <div class="container-full mx-auto">
-            <!-- Search Bar -->
-            <div class="search-container mb-2">
-                <div class="relative">
-                    <i class="fas fa-search search-icon"></i>
-                    <input 
-                        type="text" 
-                        id="searchInput" 
-                        placeholder="Search products by name, brand, or category..." 
-                        class="search-input"
-                        oninput="filterProducts()"
-                        autocomplete="off"
-                    />
-                    <button onclick="clearSearch()" class="search-clear" id="clearBtn">
-                        <i class="fas fa-times"></i>
-                    </button>
+        <!-- ===== HERO ===== -->
+        <section class="hero-section" aria-label="Hero banner">
+            <div class="hero-bg"></div>
+            <div class="hero-content animate-zoom">
+                <div class="hero-badge animate-fade-in">
+                    <i class="fas fa-kenya-flag text-sm"></i> Kenya's Trusted Tech Store
+                </div>
+                <h1 class="hero-title animate-slide-up">
+                    Premium Tech,<br><span class="highlight">Ready for Kenya.</span>
+                </h1>
+                <p class="hero-subtitle animate-slide-up" style="animation-delay:0.1s;">
+                    Shop genuine phones, laptops, audio, and accessories with fast delivery across Kenya.
+                </p>
+                <div class="flex flex-wrap justify-center gap-3 animate-slide-up" style="animation-delay:0.2s;">
+                    <a href="#shop" class="hero-btn-primary" aria-label="Shop now">
+                        <i class="fas fa-bolt"></i> Shop Now
+                    </a>
+                    <a href="#bundles" class="hero-btn-secondary" aria-label="View deals">
+                        <i class="fas fa-tag"></i> View Deals
+                    </a>
+                </div>
+                <div class="hero-features animate-fade-in" style="animation-delay:0.3s;">
+                    <span><i class="fas fa-truck" aria-hidden="true"></i> Same-Day Nairobi</span>
+                    <span><i class="fas fa-credit-card" aria-hidden="true"></i> Secure Payment</span>
+                    <span><i class="fas fa-shield-alt" aria-hidden="true"></i> Official Warranty</span>
                 </div>
             </div>
+        </section>
 
-            <!-- Category Pills + Sort -->
-            <div class="flex items-center justify-between gap-2">
-                <div class="category-scroll flex-1" id="categoryList">
-                    <span class="category-pill active" data-category="all" onclick="filterByCategory('all', this)">
-                        <i class="fas fa-th-large"></i> All
-                        <span class="count">{{ all_products|length }}</span>
-                    </span>
-                    {% for category, info in categories.items() %}
-                    <span class="category-pill" data-category="{{ category }}" onclick="filterByCategory('{{ category }}', this)">
-                        <i class="fas {{ info.icon }}"></i> {{ category }}
-                        <span class="count">{{ info.count }}</span>
-                    </span>
-                    {% endfor %}
-                </div>
-                <div class="flex-shrink-0 ml-1">
-                    <select id="sortSelect" onchange="sortProducts()" class="sort-select">
-                        <option value="name">Sort</option>
-                        <option value="price-low">Price ↑</option>
-                        <option value="price-high">Price ↓</option>
-                        <option value="rating">Rating</option>
-                    </select>
-                </div>
-            </div>
-            
-            <!-- Result Count -->
-            <div class="mt-1.5 text-xs text-gray-400">
-                Showing <span id="visibleCount">{{ all_products|length }}</span> of <span id="totalCount">{{ all_products|length }}</span> products
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== PRODUCTS ===== -->
-    <section id="shop" class="py-4 bg-[#f8fafc]">
-        <div class="container-full mx-auto">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h2 class="text-lg md:text-2xl font-extrabold text-[#0f172a]" id="categoryTitle">🔥 All Products</h2>
-                    <p class="text-xs text-gray-400" id="categorySubtitle">Browse our complete collection</p>
-                </div>
-            </div>
-            <div class="product-grid" id="productGrid">
-                {% for id, product in all_products.items() %}
-                <div class="product-card" data-category="{{ product.category }}" data-product-id="{{ id }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-rating="{{ product.rating or 0 }}" data-stock="{{ product.stock or 0 }}">
-                    {% if product.badge %}
-                    <div class="badge {% if product.badge == 'Best Seller' %}best-seller{% elif product.badge == 'New' %}new{% elif product.badge == 'Trending' %}trending{% endif %}">
-                        {{ product.badge }}
+        <!-- ===== SEARCH & FILTERS ===== -->
+        <section class="py-3 bg-white border-b border-gray-100 sticky top-14 z-40" id="categorySection" aria-label="Search and filters">
+            <div class="container-full mx-auto">
+                <!-- Search Bar -->
+                <div class="search-container mb-2">
+                    <div class="relative">
+                        <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                        <label for="searchInput" class="sr-only">Search for products</label>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            placeholder="Search products by name, brand, or category..." 
+                            class="search-input"
+                            oninput="filterProducts()"
+                            autocomplete="off"
+                        />
+                        <button onclick="clearSearch()" class="search-clear" id="clearBtn" aria-label="Clear search">
+                            <i class="fas fa-times" aria-hidden="true"></i>
+                        </button>
                     </div>
-                    {% endif %}
-                    <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=200&fit=crop'">
-                    <div class="product-category">{{ product.category }}</div>
-                    <div class="product-name">{{ product.name }}</div>
-                    
-                    <!-- ===== PRODUCT DESCRIPTION ===== -->
-                    {% if product.description %}
-                    <div class="product-description">
-                        <i class="fas fa-align-left text-blue-500 mr-1 text-xs"></i>
-                        {{ product.description }}
-                    </div>
-                    {% endif %}
-                    
-                    <!-- ===== PRODUCT SPECIFICATIONS ===== -->
-                    {% if product.specs and product.specs|length > 0 %}
-                    <div class="product-specs">
-                        {% for spec in product.specs[:3] %}
-                        <span class="spec-tag">
-                            <i class="fas fa-check-circle"></i> {{ spec }}
+                </div>
+
+                <!-- Category Pills + Sort -->
+                <div class="flex items-center justify-between gap-2">
+                    <div class="category-scroll flex-1" id="categoryList" role="tablist">
+                        <span class="category-pill active" data-category="all" onclick="filterByCategory('all', this)" role="tab" aria-selected="true">
+                            <i class="fas fa-th-large" aria-hidden="true"></i> All
+                            <span class="count">{{ all_products|length }}</span>
+                        </span>
+                        {% for category, info in categories.items() %}
+                        <span class="category-pill" data-category="{{ category }}" onclick="filterByCategory('{{ category }}', this)" role="tab" aria-selected="false">
+                            <i class="fas {{ info.icon }}" aria-hidden="true"></i> {{ category }}
+                            <span class="count">{{ info.count }}</span>
                         </span>
                         {% endfor %}
-                        {% if product.specs|length > 3 %}
-                        <span class="spec-more">+{{ product.specs|length - 3 }} more</span>
-                        {% endif %}
                     </div>
-                    {% endif %}
-                    
-                    <div class="product-rating">
-                        {% set rating = product.rating|round(0, 'floor') %}
-                        {% for i in range(5) %}
-                            {% if i < rating %}
-                                <i class="fas fa-star"></i>
-                            {% else %}
-                                <i class="far fa-star"></i>
+                    <div class="flex-shrink-0 ml-1">
+                        <label for="sortSelect" class="sr-only">Sort products</label>
+                        <select id="sortSelect" onchange="sortProducts()" class="sort-select">
+                            <option value="name">Sort</option>
+                            <option value="price-low">Price ↑</option>
+                            <option value="price-high">Price ↓</option>
+                            <option value="rating">Rating</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Result Count -->
+                <div class="mt-1.5 text-xs text-gray-400" aria-live="polite">
+                    Showing <span id="visibleCount">{{ all_products|length }}</span> of <span id="totalCount">{{ all_products|length }}</span> products
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PRODUCTS ===== -->
+        <section id="shop" class="py-4 bg-[#f8fafc]" aria-label="Products">
+            <div class="container-full mx-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-lg md:text-2xl font-extrabold text-[#0f172a]" id="categoryTitle">🔥 All Products</h2>
+                        <p class="text-xs text-gray-400" id="categorySubtitle">Browse our complete collection</p>
+                    </div>
+                </div>
+                <div class="product-grid" id="productGrid">
+                    {% for id, product in all_products.items() %}
+                    <div class="product-card" data-category="{{ product.category }}" data-product-id="{{ id }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-rating="{{ product.rating or 0 }}" data-stock="{{ product.stock or 0 }}">
+                        {% if product.badge %}
+                        <div class="badge {% if product.badge == 'Best Seller' %}best-seller{% elif product.badge == 'New' %}new{% elif product.badge == 'Trending' %}trending{% endif %}">
+                            {{ product.badge }}
+                        </div>
+                        {% endif %}
+                        <img src="{{ product.image }}" alt="{{ product.name }} - Price Point Kenya" class="product-image" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=200&fit=crop&auto=format'">
+                        <div class="product-category">{{ product.category }}</div>
+                        <div class="product-name">{{ product.name }}</div>
+                        
+                        {% if product.description %}
+                        <div class="product-description">
+                            <i class="fas fa-align-left text-blue-500 mr-1 text-xs" aria-hidden="true"></i>
+                            {{ product.description }}
+                        </div>
+                        {% endif %}
+                        
+                        {% if product.specs and product.specs|length > 0 %}
+                        <div class="product-specs">
+                            {% for spec in product.specs[:3] %}
+                            <span class="spec-tag">
+                                <i class="fas fa-check-circle" aria-hidden="true"></i> {{ spec }}
+                            </span>
+                            {% endfor %}
+                            {% if product.specs|length > 3 %}
+                            <span class="spec-more">+{{ product.specs|length - 3 }} more</span>
                             {% endif %}
-                        {% endfor %}
-                        <span class="text-gray-400 text-[0.5rem]">({{ product.reviews or 0 }})</span>
-                    </div>
-                    <div class="product-price">KSh {{ "%.0f"|format(product.price) }}</div>
-                    <button onclick="addToCart('{{ id }}')" class="btn-add-to-cart" {% if product.stock is defined and product.stock <= 0 %}disabled{% endif %}>
-                        {% if product.stock is defined and product.stock <= 0 %}
-                            <i class="fas fa-times-circle"></i> Out of Stock
-                        {% else %}
-                            <i class="fas fa-plus"></i> Add to Cart
+                        </div>
                         {% endif %}
+                        
+                        <div class="product-rating" aria-label="Rating: {{ product.rating }} out of 5 stars">
+                            {% set rating = product.rating|round(0, 'floor') %}
+                            {% for i in range(5) %}
+                                {% if i < rating %}
+                                    <i class="fas fa-star" aria-hidden="true"></i>
+                                {% else %}
+                                    <i class="far fa-star" aria-hidden="true"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="text-gray-400 text-[0.5rem]">({{ product.reviews or 0 }})</span>
+                        </div>
+                        <div class="product-price">KSh {{ "%.0f"|format(product.price) }}</div>
+                        <button onclick="addToCart('{{ id }}')" class="btn-add-to-cart" {% if product.stock is defined and product.stock <= 0 %}disabled{% endif %} aria-label="Add {{ product.name }} to cart">
+                            {% if product.stock is defined and product.stock <= 0 %}
+                                <i class="fas fa-times-circle" aria-hidden="true"></i> Out of Stock
+                            {% else %}
+                                <i class="fas fa-plus" aria-hidden="true"></i> Add to Cart
+                            {% endif %}
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div id="noProducts" class="no-products" style="display: none;">
+                    <i class="fas fa-box-open" aria-hidden="true"></i>
+                    <h3>No products found</h3>
+                    <p>Try adjusting your search or filter</p>
+                    <button onclick="resetFilters()" class="mt-3 px-5 py-2 bg-[#1e293b] text-white rounded-full text-sm font-semibold hover:bg-[#0f172a] transition" aria-label="Reset filters">
+                        <i class="fas fa-undo" aria-hidden="true"></i> Reset
                     </button>
                 </div>
-                {% endfor %}
             </div>
-            <div id="noProducts" class="no-products" style="display: none;">
-                <i class="fas fa-box-open"></i>
-                <h3>No products found</h3>
-                <p>Try adjusting your search or filter</p>
-                <button onclick="resetFilters()" class="mt-3 px-5 py-2 bg-[#1e293b] text-white rounded-full text-sm font-semibold hover:bg-[#0f172a] transition">
-                    <i class="fas fa-undo"></i> Reset
-                </button>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- ===== BUNDLES ===== -->
-    <section id="bundles" class="py-6 bg-white">
-        <div class="container-full mx-auto">
-            <div class="text-center mb-5">
-                <h2 class="text-lg md:text-2xl font-extrabold text-[#0f172a]">Complete Your Setup</h2>
-                <p class="text-xs text-gray-400">Curated bundles for the best value</p>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {% for id, bundle in bundles.items() %}
-                <div class="bundle-card {% if bundle.popular %}popular{% endif %}">
-                    {% if bundle.popular %}
-                    <span class="text-[0.55rem] font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full inline-block mb-1">⭐ Best Value</span>
-                    {% endif %}
-                    <img src="{{ bundle.image }}" alt="{{ bundle.name }}" class="bundle-image w-full object-contain" loading="lazy" onerror="this.style.display='none'">
-                    <div class="bundle-name">{{ bundle.name }}</div>
-                    <div class="text-gray-500 text-[0.6rem]">{{ bundle.products|length }} Products</div>
-                    <div class="bundle-price">KSh {{ "%.0f"|format(bundle.price) }}</div>
-                    <div class="bundle-savings">Save KSh {{ "%.0f"|format(bundle.savings) }}</div>
-                    <button onclick="addToCart('{{ id }}')" class="mt-3 w-full py-1.5 rounded-full bg-[#1e293b] text-white text-sm font-semibold hover:bg-[#0f172a] transition">
-                        <i class="fas fa-plus"></i> Add Bundle
-                    </button>
+        <!-- ===== BUNDLES ===== -->
+        <section id="bundles" class="py-6 bg-white" aria-label="Product bundles">
+            <div class="container-full mx-auto">
+                <div class="text-center mb-5">
+                    <h2 class="text-lg md:text-2xl font-extrabold text-[#0f172a]">Complete Your Setup</h2>
+                    <p class="text-xs text-gray-400">Curated bundles for the best value</p>
                 </div>
-                {% endfor %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {% for id, bundle in bundles.items() %}
+                    <div class="bundle-card {% if bundle.popular %}popular{% endif %}">
+                        {% if bundle.popular %}
+                        <span class="text-[0.55rem] font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full inline-block mb-1">⭐ Best Value</span>
+                        {% endif %}
+                        <img src="{{ bundle.image }}" alt="{{ bundle.name }} bundle" class="bundle-image w-full object-contain" loading="lazy" onerror="this.style.display='none'">
+                        <div class="bundle-name">{{ bundle.name }}</div>
+                        <div class="text-gray-500 text-[0.6rem]">{{ bundle.products|length }} Products</div>
+                        <div class="bundle-price">KSh {{ "%.0f"|format(bundle.price) }}</div>
+                        <div class="bundle-savings">Save KSh {{ "%.0f"|format(bundle.savings) }}</div>
+                        <button onclick="addToCart('{{ id }}')" class="mt-3 w-full py-1.5 rounded-full bg-[#1e293b] text-white text-sm font-semibold hover:bg-[#0f172a] transition" aria-label="Add {{ bundle.name }} to cart">
+                            <i class="fas fa-plus" aria-hidden="true"></i> Add Bundle
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- ===== WHY US ===== -->
-    <section id="about" class="py-6 bg-[#f8fafc]">
-        <div class="container-full mx-auto">
-            <div class="text-center mb-5">
-                <h2 class="text-base md:text-2xl font-extrabold text-[#0f172a]">Why Price Point?</h2>
-                <p class="text-xs text-gray-400">Kenya's trusted electronics store</p>
+        <!-- ===== WHY US ===== -->
+        <section id="about" class="py-6 bg-[#f8fafc]" aria-label="Why choose us">
+            <div class="container-full mx-auto">
+                <div class="text-center mb-5">
+                    <h2 class="text-base md:text-2xl font-extrabold text-[#0f172a]">Why Price Point?</h2>
+                    <p class="text-xs text-gray-400">Kenya's trusted electronics store</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="w-12 h-12 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-xl text-blue-600 mb-2" aria-hidden="true">📦</div>
+                        <h3 class="font-semibold text-sm">Same-Day Nairobi</h3>
+                        <p class="text-xs text-gray-500">Fast delivery</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-xl text-blue-600 mb-2" aria-hidden="true">🚚</div>
+                        <h3 class="font-semibold text-sm">Next-Day Countrywide</h3>
+                        <p class="text-xs text-gray-500">Reliable delivery</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-xl text-blue-600 mb-2" aria-hidden="true">✅</div>
+                        <h3 class="font-semibold text-sm">Genuine Products</h3>
+                        <p class="text-xs text-gray-500">100% authentic</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-xl text-blue-600 mb-2" aria-hidden="true">🛡️</div>
+                        <h3 class="font-semibold text-sm">Official Warranty</h3>
+                        <p class="text-xs text-gray-500">Peace of mind</p>
+                    </div>
+                </div>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="text-center">
-                    <div class="w-12 h-12 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-xl text-blue-600 mb-2">📦</div>
-                    <h4 class="font-semibold text-sm">Same-Day Nairobi</h4>
-                    <p class="text-xs text-gray-500">Fast delivery</p>
-                </div>
-                <div class="text-center">
-                    <div class="w-12 h-12 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-xl text-blue-600 mb-2">🚚</div>
-                    <h4 class="font-semibold text-sm">Next-Day Countrywide</h4>
-                    <p class="text-xs text-gray-500">Reliable delivery</p>
-                </div>
-                <div class="text-center">
-                    <div class="w-12 h-12 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-xl text-blue-600 mb-2">✅</div>
-                    <h4 class="font-semibold text-sm">Genuine Products</h4>
-                    <p class="text-xs text-gray-500">100% authentic</p>
-                </div>
-                <div class="text-center">
-                    <div class="w-12 h-12 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-xl text-blue-600 mb-2">🛡️</div>
-                    <h4 class="font-semibold text-sm">Official Warranty</h4>
-                    <p class="text-xs text-gray-500">Peace of mind</p>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
+
+    </main>
 
     <!-- ===== FOOTER ===== -->
-    <footer class="app-footer">
+    <footer class="app-footer" role="contentinfo">
         <div class="container-full mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
             <div class="col-span-2 md:col-span-1">
                 <h3 class="text-white text-xl font-bold flex items-center gap-2">
-                    <i class="fas fa-bolt text-blue-500"></i> Price<span class="text-blue-500">Point</span>
+                    <i class="fas fa-bolt text-blue-500" aria-hidden="true"></i> Price<span class="text-blue-500">Point</span>
                 </h3>
                 <p class="mt-1 text-xs">Premium electronics for every need in Kenya.</p>
             </div>
@@ -829,7 +826,8 @@
                 <h4 class="footer-heading">Stay Updated</h4>
                 <p class="text-xs text-gray-400 mb-1">Get deals & new arrivals</p>
                 <form class="flex gap-1">
-                    <input type="email" placeholder="Email" class="flex-1 px-2 py-1.5 rounded-lg bg-white/10 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-xs" />
+                    <label for="emailInput" class="sr-only">Email address</label>
+                    <input id="emailInput" type="email" placeholder="Email" class="flex-1 px-2 py-1.5 rounded-lg bg-white/10 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-xs" />
                     <button type="submit" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg font-semibold text-xs hover:bg-blue-700 transition">Subscribe</button>
                 </form>
             </div>
@@ -845,8 +843,8 @@
     </footer>
 
     <!-- ===== TOAST ===== -->
-    <div id="toast" class="toast hidden">
-        <i class="fas fa-check-circle mr-2"></i>
+    <div id="toast" class="toast hidden" role="alert" aria-live="assertive">
+        <i class="fas fa-check-circle mr-2" aria-hidden="true"></i>
         <span id="toastMessage">Added to cart!</span>
     </div>
 
@@ -916,9 +914,11 @@
         function filterByCategory(category, element) {
             document.querySelectorAll('.category-pill').forEach(pill => {
                 pill.classList.remove('active');
+                pill.setAttribute('aria-selected', 'false');
             });
             if (element) {
                 element.classList.add('active');
+                element.setAttribute('aria-selected', 'true');
             }
             
             currentCategory = category;
@@ -982,8 +982,10 @@
             currentCategory = 'all';
             document.querySelectorAll('.category-pill').forEach(pill => {
                 pill.classList.remove('active');
+                pill.setAttribute('aria-selected', 'false');
                 if (pill.dataset.category === 'all') {
                     pill.classList.add('active');
+                    pill.setAttribute('aria-selected', 'true');
                 }
             });
             
