@@ -12,18 +12,46 @@ app = Flask(__name__)
 app.secret_key = 'allison-electronics-secret-2026'
 app.permanent_session_lifetime = timedelta(days=7)
 
+# ================================================================
+# ===== FIX: VERCEL READ-ONLY FILESYSTEM COMPATIBILITY =====
+# ================================================================
+
+# Detect if running on Vercel
+IS_VERCEL = 'VERCEL' in os.environ or 'NOW' in os.environ
+
+# Use /tmp directory on Vercel (writable), else local folder
+if IS_VERCEL:
+    UPLOAD_FOLDER = '/tmp/static/uploads'
+    STATIC_FOLDER = '/tmp/static'
+else:
+    UPLOAD_FOLDER = 'static/uploads'
+    STATIC_FOLDER = 'static'
+
 # ===== IMAGE UPLOAD CONFIGURATION =====
-UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB max file size
 
-# Create upload folder if it doesn't exist
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# Create folders safely
+try:
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    os.makedirs(STATIC_FOLDER, exist_ok=True)
+except OSError:
+    # On Vercel, if we can't create folders, use /tmp
+    UPLOAD_FOLDER = '/tmp/static/uploads'
+    STATIC_FOLDER = '/tmp/static'
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    os.makedirs(STATIC_FOLDER, exist_ok=True)
+
+# ===== Configure Flask static folder for Vercel =====
+app.static_folder = STATIC_FOLDER
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# ================================================================
 # ===== SUPABASE CONFIGURATION =====
+# ================================================================
+
 SUPABASE_URL = "https://hzqrdwerkgfmfaufabjr.supabase.co"
 SUPABASE_KEY = "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld"
 
@@ -60,7 +88,10 @@ except Exception as e:
     print(f"⚠️ Supabase error: {e}")
     print("📁 Using JSON storage")
 
+# ================================================================
 # ===== JSON FALLBACK =====
+# ================================================================
+
 def load_json(file_path):
     try:
         if os.path.exists(file_path):
@@ -731,8 +762,7 @@ def update_cart_item(item_id, action):
         print(f"Error updating cart: {e}")
         return jsonify({'success': False, 'message': str(e)}), 500
 
-# ===== FIXED: This line had the syntax error =====
-@app.route('/remove-from-cart/<item_id>', methods=['POST'])  # ← Fixed!
+@app.route('/remove-from-cart/<item_id>', methods=['POST'])
 def remove_from_cart(item_id):
     try:
         cart = get_cart()
@@ -940,7 +970,8 @@ def api_status():
         'products': len(load_products()),
         'bundles': len(load_bundles()),
         'orders': len(load_orders()),
-        'timestamp': datetime.utcnow().isoformat()
+        'timestamp': datetime.utcnow().isoformat(),
+        'environment': 'vercel' if IS_VERCEL else 'local'
     })
 
 @app.route('/api/products')
@@ -1167,6 +1198,7 @@ if __name__ == '__main__':
     print("="*60)
     print(f"📁 Database: {DB_TYPE}")
     print(f"🔗 Connected: {'✅ YES' if DB_CONNECTED else '❌ NO'}")
+    print(f"🌍 Environment: {'Vercel' if IS_VERCEL else 'Local'}")
     print("💰 Prices in Kenyan Shillings (KES)")
     print("📷 Image Upload: Enabled")
     print("📊 Revenue Analytics: Enabled")
