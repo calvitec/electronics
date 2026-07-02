@@ -29,7 +29,7 @@
     <!-- ===== GOOGLE ADSENSE ===== -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9089705612009536" crossorigin="anonymous"></script>
     
-    <!-- ===== STYLES (Optimized) ===== -->
+    <!-- ===== STYLES ===== -->
     <script src="https://cdn.tailwindcss.com" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -43,12 +43,14 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes cardPop { 0% { opacity: 0; transform: scale(0.95) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
         @keyframes zoomIn { from { transform: scale(1.1); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
         .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
         .animate-card-pop { animation: cardPop 0.4s ease-out forwards; }
         .animate-zoom { animation: zoomIn 1s ease-out forwards; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
 
-        /* ===== HEADER ===== */
+        /* ===== HEADER / NAVBAR ===== */
         .app-header {
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(12px);
@@ -62,6 +64,18 @@
         .app-header.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
         .brand-text { font-size: 1.25rem; font-weight: 800; }
         .brand-text span { color: #2563eb; }
+
+        .nav-link {
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.85rem;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .nav-link:hover, .nav-link.active { background: #f1f5f9; color: #0f172a; }
+        .nav-link i { margin-right: 6px; }
 
         .cart-count {
             background: #2563eb;
@@ -436,6 +450,67 @@
         .bundle-card .bundle-price { font-weight: 700; font-size: 1.1rem; color: #0f172a; }
         .bundle-card .bundle-savings { color: #10b981; font-weight: 600; font-size: 0.75rem; }
 
+        /* ===== TESTIMONIALS ===== */
+        .testimonial-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #eef2f6;
+            transition: all 0.3s;
+            text-align: center;
+            height: 100%;
+        }
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.04);
+            border-color: #2563eb;
+        }
+        .testimonial-card .avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        .testimonial-card .stars {
+            color: #f59e0b;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        .testimonial-card .quote {
+            color: #475569;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        .testimonial-card .name {
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 12px;
+        }
+        .testimonial-card .title {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        /* ===== MAP ===== */
+        .map-container {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #eef2f6;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        }
+        .map-container iframe {
+            width: 100%;
+            height: 350px;
+            border: none;
+            display: block;
+        }
+
         /* ===== TOAST ===== */
         .toast {
             position: fixed;
@@ -497,6 +572,8 @@
             .hero-btn-primary, .hero-btn-secondary { padding: 10px 24px; font-size: 0.85rem; }
             .product-description { font-size: 0.7rem; }
             .product-specs .spec-tag { font-size: 0.55rem; padding: 1px 8px; }
+            .nav-links { display: none !important; }
+            .map-container iframe { height: 250px; }
         }
 
         @media (max-width: 480px) {
@@ -528,6 +605,9 @@
             .hero-btn-primary, .hero-btn-secondary { padding: 8px 18px; font-size: 0.75rem; }
             .product-description { display: none; }
             .product-specs { display: none; }
+            .testimonial-card { padding: 16px; }
+            .testimonial-card .avatar { width: 48px; height: 48px; font-size: 1.2rem; }
+            .map-container iframe { height: 200px; }
         }
 
         @media (max-width: 380px) {
@@ -541,7 +621,7 @@
             .hero-title { font-size: 1.2rem; }
         }
 
-        /* ===== SR ONLY (Screen Reader Only) ===== */
+        /* ===== SR ONLY ===== */
         .sr-only {
             position: absolute;
             width: 1px;
@@ -557,13 +637,24 @@
 </head>
 <body>
 
-    <!-- ===== HEADER ===== -->
+    <!-- ===== HEADER / NAVBAR ===== -->
     <header class="app-header" id="mainHeader" role="banner">
         <div class="container-full mx-auto flex items-center justify-between h-14">
             <a href="/" class="flex items-center gap-2" aria-label="Price Point Home">
                 <i class="fas fa-bolt text-blue-600 text-xl"></i>
                 <span class="brand-text">Price<span>Point</span></span>
             </a>
+            
+            <!-- Navigation Links -->
+            <nav class="nav-links hidden md:flex items-center gap-1" aria-label="Main navigation">
+                <a href="/" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+                <a href="#shop" class="nav-link"><i class="fas fa-mobile-alt"></i> Products</a>
+                <a href="#bundles" class="nav-link"><i class="fas fa-tag"></i> Bundles</a>
+                <a href="#testimonials" class="nav-link"><i class="fas fa-star"></i> Reviews</a>
+                <a href="#location" class="nav-link"><i class="fas fa-map-marker-alt"></i> Location</a>
+                <a href="#about" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+            </nav>
+
             <div class="flex items-center gap-3">
                 <a href="/cart" class="relative text-gray-700 hover:text-blue-600 transition" aria-label="Shopping cart">
                     <i class="fas fa-shopping-bag text-lg"></i>
@@ -572,6 +663,21 @@
                 <a href="#shop" class="bg-[#1e293b] text-white px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-[#0f172a] transition" aria-label="Go to shop">
                     <i class="fas fa-plus"></i> Shop
                 </a>
+                <!-- Mobile Menu Toggle -->
+                <button class="md:hidden text-gray-700 hover:text-blue-600 transition" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="md:hidden bg-white border-b border-gray-100 hidden">
+            <div class="container-full mx-auto py-3 flex flex-col gap-2">
+                <a href="/" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+                <a href="#shop" class="nav-link"><i class="fas fa-mobile-alt"></i> Products</a>
+                <a href="#bundles" class="nav-link"><i class="fas fa-tag"></i> Bundles</a>
+                <a href="#testimonials" class="nav-link"><i class="fas fa-star"></i> Reviews</a>
+                <a href="#location" class="nav-link"><i class="fas fa-map-marker-alt"></i> Location</a>
+                <a href="#about" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
             </div>
         </div>
     </header>
@@ -763,6 +869,106 @@
             </div>
         </section>
 
+        <!-- ===== TESTIMONIALS ===== -->
+        <section id="testimonials" class="py-8 bg-[#f8fafc]" aria-label="Customer testimonials">
+            <div class="container-full mx-auto">
+                <div class="text-center mb-6">
+                    <h2 class="text-lg md:text-2xl font-extrabold text-[#0f172a]">What Our Customers Say</h2>
+                    <p class="text-xs text-gray-400">Real reviews from real customers</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Testimonial 1 -->
+                    <div class="testimonial-card animate-slide-up">
+                        <div class="avatar" style="background: linear-gradient(135deg, #2563eb, #7c3aed);">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="quote">"Price Point delivered my MacBook Air M3 within 4 hours! Genuine product, great price, and excellent customer service. Highly recommend!"</p>
+                        <div class="name">John Mwangi</div>
+                        <div class="title">Nairobi, Kenya</div>
+                    </div>
+
+                    <!-- Testimonial 2 -->
+                    <div class="testimonial-card animate-slide-up" style="animation-delay: 0.1s;">
+                        <div class="avatar" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="quote">"I bought the iPhone 15 Pro Max and it was delivered the next day. The pricing is competitive and the phone is 100% genuine. Trustworthy store!"</p>
+                        <div class="name">Sarah Akinyi</div>
+                        <div class="title">Mombasa, Kenya</div>
+                    </div>
+
+                    <!-- Testimonial 3 -->
+                    <div class="testimonial-card animate-slide-up" style="animation-delay: 0.2s;">
+                        <div class="avatar" style="background: linear-gradient(135deg, #10b981, #059669);">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <p class="quote">"Excellent service! I ordered the Anker Power Bank and received it within 24 hours. The quality is top-notch. Will definitely shop here again."</p>
+                        <div class="name">David Ochieng</div>
+                        <div class="title">Kisumu, Kenya</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== LOCATION MAP ===== -->
+        <section id="location" class="py-8 bg-white" aria-label="Store location">
+            <div class="container-full mx-auto">
+                <div class="text-center mb-6">
+                    <h2 class="text-lg md:text-2xl font-extrabold text-[#0f172a]">📍 Find Us</h2>
+                    <p class="text-xs text-gray-400">Visit our store or contact us for delivery</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2">
+                        <div class="map-container">
+                            <!-- Google Maps Embed - Nairobi CBD Location -->
+                            <iframe 
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d255282.35853742383!2d36.68219671385957!3d-1.3028611!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2s!4v1700000000000" 
+                                allowfullscreen="" 
+                                loading="lazy" 
+                                referrerpolicy="no-referrer-when-downgrade"
+                                title="Price Point Store Location Map"
+                            ></iframe>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-center gap-4">
+                        <div class="bg-[#f8fafc] p-4 rounded-xl border border-gray-100">
+                            <h3 class="font-bold text-[#0f172a] text-sm">📍 Address</h3>
+                            <p class="text-sm text-gray-600 mt-1">Nairobi CBD,<br />Kenya</p>
+                        </div>
+                        <div class="bg-[#f8fafc] p-4 rounded-xl border border-gray-100">
+                            <h3 class="font-bold text-[#0f172a] text-sm">📞 Contact</h3>
+                            <p class="text-sm text-gray-600 mt-1">+254 700 123 456<br />info@apexbuilt.site</p>
+                        </div>
+                        <div class="bg-[#f8fafc] p-4 rounded-xl border border-gray-100">
+                            <h3 class="font-bold text-[#0f172a] text-sm">🕐 Hours</h3>
+                            <p class="text-sm text-gray-600 mt-1">Mon-Fri: 8AM - 6PM<br />Sat: 9AM - 4PM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- ===== WHY US ===== -->
         <section id="about" class="py-6 bg-[#f8fafc]" aria-label="Why choose us">
             <div class="container-full mx-auto">
@@ -805,6 +1011,12 @@
                     <i class="fas fa-bolt text-blue-500" aria-hidden="true"></i> Price<span class="text-blue-500">Point</span>
                 </h3>
                 <p class="mt-1 text-xs">Premium electronics for every need in Kenya.</p>
+                <div class="flex gap-3 mt-3">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook text-gray-400 hover:text-white transition text-lg"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter text-gray-400 hover:text-white transition text-lg"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram text-gray-400 hover:text-white transition text-lg"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube text-gray-400 hover:text-white transition text-lg"></i></a>
+                </div>
             </div>
             <div>
                 <h4 class="footer-heading">Shop</h4>
@@ -833,7 +1045,7 @@
             </div>
         </div>
         <div class="container-full mx-auto mt-6 pt-4 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
-            <p>© 2026 <span class="text-white font-medium">Price Point Kenya</span></p>
+            <p>© 2026 <span class="text-white font-medium">Price Point Kenya</span>. All rights reserved.</p>
             <div class="flex gap-3 mt-1 md:mt-0">
                 <a href="#" class="hover:text-white transition">Privacy</a>
                 <a href="#" class="hover:text-white transition">Terms</a>
@@ -849,6 +1061,14 @@
     </div>
 
     <script>
+        // ============================================================
+        // MOBILE MENU TOGGLE
+        // ============================================================
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
         // ============================================================
         // SEARCH, FILTER & SORT
         // ============================================================
