@@ -13,7 +13,7 @@ app.secret_key = 'allison-electronics-secret-2026'
 app.permanent_session_lifetime = timedelta(days=7)
 
 # ================================================================
-# ===== FIX: VERCEL READ-ONLY FILESYSTEM COMPATIBILITY =====
+# ===== VERCEL READ-ONLY FILESYSTEM COMPATIBILITY =====
 # ================================================================
 
 # Detect if running on Vercel
@@ -42,16 +42,13 @@ except OSError:
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     os.makedirs(STATIC_FOLDER, exist_ok=True)
 
-# ===== Configure Flask static folder for Vercel =====
+# Configure Flask static folder for Vercel
 app.static_folder = STATIC_FOLDER
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# ================================================================
 # ===== SUPABASE CONFIGURATION =====
-# ================================================================
-
 SUPABASE_URL = "https://hzqrdwerkgfmfaufabjr.supabase.co"
 SUPABASE_KEY = "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld"
 
@@ -88,10 +85,7 @@ except Exception as e:
     print(f"⚠️ Supabase error: {e}")
     print("📁 Using JSON storage")
 
-# ================================================================
 # ===== JSON FALLBACK =====
-# ================================================================
-
 def load_json(file_path):
     try:
         if os.path.exists(file_path):
@@ -219,44 +213,69 @@ def get_cart():
     return cart
 
 def save_product_to_db(product_data):
-    """Save product to Supabase or JSON"""
+    """Save product to Supabase or JSON - SINGLE SAVE"""
+    product_copy = dict(product_data)
+    
     if DB_CONNECTED:
         try:
+            # Check if product exists
             check = requests.get(
-                f"{SUPABASE_URL}/rest/v1/products?id=eq.{product_data.get('id')}",
+                f"{SUPABASE_URL}/rest/v1/products?id=eq.{product_copy.get('id')}",
                 headers=SUPABASE_HEADERS,
                 timeout=10
             )
             if check.status_code == 200 and check.json():
+                # Update existing product
                 response = requests.patch(
-                    f"{SUPABASE_URL}/rest/v1/products?id=eq.{product_data.get('id')}",
+                    f"{SUPABASE_URL}/rest/v1/products?id=eq.{product_copy.get('id')}",
                     headers=SUPABASE_HEADERS,
-                    json=product_data,
+                    json=product_copy,
                     timeout=10
                 )
             else:
+                # Insert new product
                 response = requests.post(
                     f"{SUPABASE_URL}/rest/v1/products",
                     headers=SUPABASE_HEADERS,
-                    json=product_data,
+                    json=product_copy,
                     timeout=10
                 )
+            print(f"✅ Product saved to Supabase: {product_copy.get('id')}")
+            
+            # Also update JSON file for consistency
+            products = load_json('products.json')
+            found = False
+            for p in products:
+                if str(p.get('id')) == str(product_copy.get('id')):
+                    p.update(product_copy)
+                    found = True
+                    break
+            if not found:
+                products.append(product_copy)
+            save_json('products.json', products)
+            
             return response.status_code in [200, 201, 204]
         except Exception as e:
-            print(f"Error saving product: {e}")
-            return False
+            print(f"Error saving product to Supabase: {e}")
+            # Fallback to JSON only
+            return save_product_to_json_only(product_copy)
     else:
-        products = load_json('products.json')
-        found = False
-        for p in products:
-            if str(p.get('id')) == str(product_data.get('id')):
-                p.update(product_data)
-                found = True
-                break
-        if not found:
-            products.append(product_data)
-        save_json('products.json', products)
-        return True
+        return save_product_to_json_only(product_copy)
+
+def save_product_to_json_only(product_data):
+    """Save product to JSON file only (fallback)"""
+    products = load_json('products.json')
+    found = False
+    for p in products:
+        if str(p.get('id')) == str(product_data.get('id')):
+            p.update(product_data)
+            found = True
+            break
+    if not found:
+        products.append(product_data)
+    save_json('products.json', products)
+    print(f"✅ Product saved to JSON: {product_data.get('id')}")
+    return True
 
 # ================================================================
 # ===== ORDER FUNCTIONS =====
@@ -869,11 +888,20 @@ def place_order():
         products = load_products()
         bundles = load_bundles()
         order_items = []
+        products_to_update = []  # Store updated products for single save
         
         for item_id, quantity in cart.items():
             item_found = False
             for p in products:
                 if str(p.get('id')) == str(item_id):
+                    # Check stock availability
+                    current_stock = p.get('stock', 0)
+                    if current_stock < quantity:
+                        return jsonify({
+                            'success': False,
+                            'message': f'Not enough stock for {p.get("name")}. Available: {current_stock}'
+                        }), 400
+                    
                     item_total = p.get('price', 0) * quantity
                     subtotal += item_total
                     order_items.append({
@@ -885,6 +913,12 @@ def place_order():
                         'type': 'product'
                     })
                     item_found = True
+                    
+                    # Update stock in local product
+                    current_stock = p.get('stock', 0)
+                    new_stock = max(0, current_stock - quantity)
+                    p['stock'] = new_stock
+                    products_to_update.append(dict(p))  # Store a copy for saving
                     break
             
             if not item_found:
@@ -931,6 +965,14 @@ def place_order():
         print(f"📦 Order data: {json.dumps(order_data, indent=2)}")
         
         if save_order_to_db(order_data):
+            # ===== REDUCE STOCK ONCE =====
+            print(f"📦 Reducing stock for {len(products_to_update)} items...")
+            
+            # Save each updated product (single save handles both JSON and Supabase)
+            for updated_product in products_to_update:
+                save_product_to_db(updated_product)
+                print(f"✅ Stock updated: {updated_product.get('name')} → {updated_product.get('stock')}")
+            
             session['cart'] = {}
             session.modified = True
             
