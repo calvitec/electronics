@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>Price Point · Premium Electronics in Kenya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f8fafc; color: #0f172a; }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes cardPop { 0% { opacity: 0; transform: scale(0.95) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
+        .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        .animate-card-pop { animation: cardPop 0.4s ease-out forwards; }
+
+        /* ===== NAVIGATION ===== */
+        .app-header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #eef2f6;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        .app-header.scrolled {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        }
+        .nav-link {
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .nav-link:hover, .nav-link.active {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .nav-link i { margin-right: 6px; }
+
+        .header-btn {
+            background: #1e293b;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-btn:hover { background: #0f172a; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+
+        .cart-count {
+            background: #2563eb;
+            color: white;
+            border-radius: 50%;
+            padding: 1px 6px;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 20px;
+            text-align: center;
+            position: absolute;
+            top: -8px;
+            right: -10px;
+        }
+
+        /* ===== HERO ===== */
+        .hero-section {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            padding: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-title {
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1.1;
+            color: #0f172a;
+            margin-bottom: 1rem;
+        }
+        .hero-title .highlight { color: #2563eb; }
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: #475569;
+            max-width: 500px;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #2563eb;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            margin-bottom: 1.5rem;
+        }
+
+        /* ===== PRODUCT CARDS ===== */
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid #eef2f6;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            border-color: #2563eb;
+        }
+        .product-card .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            transition: transform 0.4s;
+        }
+        .product-card:hover .product-image { transform: scale(1.02); }
+        .product-card .product-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #0f172a;
+            margin-bottom: 4px;
+            flex-grow: 1;
+        }
+        .product-card .product-category {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+        .product-card .product-price {
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #0f172a;
+            margin: 8px 0;
+        }
+        .product-card .product-rating {
+            color: #f59e0b;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+        .product-card .badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #2563eb;
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .product-card .badge.best-seller { background: #f59e0b; }
+        .product-card .badge.new { background: #10b981; }
+        .product-card .badge.trending { background: #8b5cf6; }
+
+        .btn-add-to-cart {
+            background: #f1f5f9;
+            color: #0f172a;
+            border: none;
+            padding: 10px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            width: 100%;
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-add-to-cart:hover {
+            background: #2563eb;
+            color: white;
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(37,99,235,0.15);
+        }
+
+        /* ===== PRODUCT DESCRIPTION & SPECS ===== */
+        .product-description {
+            color: #64748b;
+            font-size: 0.78rem;
+            line-height: 1.4;
+            margin-top: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .product-specs {
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .product-specs .spec-tag {
+            display: inline-block;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 9999px;
+            padding: 1px 10px;
+            font-size: 0.6rem;
+            font-weight: 500;
+            color: #475569;
+        }
+        .product-specs .spec-tag i {
+            color: #2563eb;
+            margin-right: 3px;
+            font-size: 0.5rem;
+        }
+        .product-specs .spec-more {
+            font-size: 0.6rem;
+            color: #94a3b8;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        /* ===== CATEGORY PILLS ===== */
+        .category-pill {
+            background: white;
+            border: 1px solid #eef2f6;
+            padding: 10px 24px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #475569;
+            transition: all 0.2s;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .category-pill:hover {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+        .category-pill.active {
+            background: #1e293b;
+            color: white;
+            border-color: #1e293b;
+        }
+        .category-pill .count {
+            background: rgba(255,255,255,0.15);
+            padding: 1px 8px;
+            border-radius: 9999px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        .category-pill.active .count {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* ===== SECTION TITLES ===== */
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+        .section-subtitle {
+            color: #64748b;
+            font-size: 1rem;
+            max-width: 500px;
+        }
+
+        /* ===== BUNDLE CARDS ===== */
+        .bundle-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #eef2f6;
+            transition: all 0.3s;
+            text-align: center;
+            height: 100%;
+        }
+        .bundle-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            border-color: #f59e0b;
+        }
+        .bundle-card.popular { border-color: #f59e0b; background: #fffbeb; }
+        .bundle-card .bundle-image {
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 12px;
+        }
+        .bundle-card .bundle-name { font-weight: 700; font-size: 1rem; }
+        .bundle-card .bundle-price { font-weight: 700; font-size: 1.2rem; color: #0f172a; }
+        .bundle-card .bundle-savings { color: #10b981; font-weight: 600; font-size: 0.85rem; }
+
+        /* ===== FOOTER ===== */
+        .app-footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 60px 0 30px;
+            margin-top: 40px;
+        }
+        .app-footer a { color: #94a3b8; text-decoration: none; transition: color 0.2s; }
+        .app-footer a:hover { color: white; }
+        .app-footer .footer-heading { color: white; font-weight: 600; font-size: 0.9rem; margin-bottom: 1rem; }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            border: 1px solid #eef2f6;
+            z-index: 9999;
+            animation: slideUp 0.4s ease-out;
+            max-width: 400px;
+        }
+        .toast.hidden { display: none; }
+
+        /* ===== PRODUCT GRID ===== */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .product-grid .product-card {
+            animation: cardPop 0.4s ease-out forwards;
+        }
+
+        .no-products {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #eef2f6;
+        }
+        .no-products i {
+            font-size: 3rem;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+        }
+        .no-products h3 {
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+        .no-products p {
+            color: #94a3b8;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.2rem; }
+            .hero-section { padding: 40px 0; }
+            .nav-links { display: none !important; }
+            .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+            .product-card .product-image { height: 140px; }
+            .section-title { font-size: 1.5rem; }
+            .category-pill { padding: 6px 14px; font-size: 0.75rem; }
+            .product-description { font-size: 0.7rem; }
+            .product-specs .spec-tag { font-size: 0.55rem; padding: 1px 8px; }
+        }
+        @media (max-width: 480px) {
+            .hero-title { font-size: 1.8rem; }
+            .product-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .product-card { padding: 12px; }
+            .product-card .product-image { height: 120px; }
+            .product-card .product-name { font-size: 0.85rem; }
+            .product-card .product-price { font-size: 1rem; }
+            .btn-add-to-cart { font-size: 0.75rem; padding: 8px; }
+            .category-pill { font-size: 0.7rem; padding: 4px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="app-header" id="mainHeader">
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+            <a href="/" class="flex items-center gap-2 text-2xl font-bold text-[#0f172a]">
+                <i class="fas fa-bolt text-blue-600"></i> Price<span class="text-blue-600">Point</span>
+            </a>
+            <div class="flex items-center gap-6">
+                <div class="nav-links hidden md:flex items-center gap-1">
+                    <a href="/" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+                    <a href="#shop" class="nav-link"><i class="fas fa-mobile-alt"></i> Phones</a>
+                    <a href="#shop" class="nav-link"><i class="fas fa-laptop"></i> Laptops</a>
+                    <a href="#bundles" class="nav-link"><i class="fas fa-tag"></i> Deals</a>
+                    <a href="#about" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="text-gray-500 hover:text-gray-700 text-lg"><i class="fas fa-search"></i></button>
+                    <a href="/cart" class="relative text-gray-700 hover:text-blue-600 transition">
+                        <i class="fas fa-shopping-bag text-xl"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </a>
+                    <a href="#shop" class="header-btn hidden sm:inline-flex">
+                        <i class="fas fa-plus"></i> Shop
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero-section">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center gap-8">
+            <div class="flex-1 text-center md:text-left">
+                <div class="hero-badge animate-fade-in">
+                    <i class="fas fa-kenya-flag text-sm"></i> Kenya's Trusted Tech Store
+                </div>
+                <h1 class="hero-title animate-slide-up">
+                    Premium Tech,<br><span class="highlight">Ready for Kenya.</span>
+                </h1>
+                <p class="hero-subtitle animate-slide-up" style="animation-delay:0.1s;">
+                    Shop genuine phones, laptops, audio, and accessories with fast delivery, transparent pricing, and warranty-backed options.
+                </p>
+                <div class="flex flex-wrap gap-3 animate-slide-up" style="animation-delay:0.2s;">
+                    <a href="#shop" class="bg-[#1e293b] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#0f172a] transition shadow-lg hover:shadow-xl flex items-center gap-2">
+                        <i class="fas fa-bolt"></i> Shop Now
+                    </a>
+                    <a href="#bundles" class="border border-gray-300 px-6 py-3 rounded-full font-semibold text-gray-700 hover:border-blue-600 hover:text-blue-600 transition flex items-center gap-2">
+                        <i class="fas fa-tag"></i> View Deals
+                    </a>
+                </div>
+                <div class="flex flex-wrap gap-6 mt-8 text-sm text-gray-500 animate-fade-in" style="animation-delay:0.3s;">
+                    <span><i class="fas fa-truck text-blue-600"></i> Same-Day Nairobi</span>
+                    <span><i class="fas fa-credit-card text-blue-600"></i> Secure Payment</span>
+                    <span><i class="fas fa-shield-alt text-blue-600"></i> Official Warranty</span>
+                </div>
+            </div>
+            <div class="flex-1 grid grid-cols-2 gap-4 max-w-md">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 animate-float">
+                    <img src="https://images.unsplash.com/photo-1696446701796-da61225697cc?w=400&h=400&fit=crop&auto=format" alt="iPhone" class="w-full h-32 object-contain" loading="lazy">
+                    <p class="font-semibold text-sm mt-2">iPhone 15 Pro Max</p>
+                    <p class="text-blue-600 font-bold">KSh 245,000</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 animate-float" style="animation-delay:0.2s;">
+                    <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop&auto=format" alt="MacBook" class="w-full h-32 object-contain" loading="lazy">
+                    <p class="font-semibold text-sm mt-2">MacBook Air M3</p>
+                    <p class="text-blue-600 font-bold">KSh 185,000</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 animate-float" style="animation-delay:0.4s;">
+                    <img src="https://images.unsplash.com/photo-1603351154351-5e2d0600bb77?w=400&h=400&fit=crop&auto=format" alt="AirPods" class="w-full h-32 object-contain" loading="lazy">
+                    <p class="font-semibold text-sm mt-2">AirPods Pro 2</p>
+                    <p class="text-blue-600 font-bold">KSh 35,000</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 animate-float" style="animation-delay:0.6s;">
+                    <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&h=400&fit=crop&auto=format" alt="Apple Watch" class="w-full h-32 object-contain" loading="lazy">
+                    <p class="font-semibold text-sm mt-2">Apple Watch Series 9</p>
+                    <p class="text-blue-600 font-bold">KSh 62,000</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CATEGORY PILLS ===== -->
+    <section class="py-6 bg-white border-b border-gray-100 sticky top-16 z-40" id="categorySection">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-wrap gap-2 justify-center" id="categoryList">
+                <span class="category-pill active" data-category="all">
+                    <i class="fas fa-th-large"></i> All Products
+                    <span class="count">{{ all_products|length }}</span>
+                </span>
+                {% for category, info in categories.items() %}
+                <span class="category-pill" data-category="{{ category }}">
+                    <i class="fas {{ info.icon }}"></i> {{ category }}
+                    <span class="count">{{ info.count }}</span>
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== PRODUCTS ===== -->
+    <section id="shop" class="py-12 px-4 bg-[#f8fafc]">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="section-title" id="categoryTitle">🔥 All Products</h2>
+                    <p class="section-subtitle" id="categorySubtitle">Browse our complete collection of premium electronics</p>
+                </div>
+                <div class="text-sm text-gray-400">
+                    <span id="productCount">{{ all_products|length }}</span> products
+                </div>
+            </div>
+            <div class="product-grid" id="productGrid">
+                {% for id, product in all_products.items() %}
+                <div class="product-card" data-category="{{ product.category }}" data-product-id="{{ id }}">
+                    <div class="badge {% if product.badge == 'Best Seller' %}best-seller{% elif product.badge == 'New' %}new{% elif product.badge == 'Trending' %}trending{% endif %}">
+                        {{ product.badge or 'New' }}
+                    </div>
+                    <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image" loading="lazy" onerror="this.style.display='none'">
+                    <div class="product-category">{{ product.category }}</div>
+                    <div class="product-name">{{ product.name }}</div>
+                    
+                    <!-- ===== PRODUCT DESCRIPTION ===== -->
+                    {% if product.description %}
+                    <div class="product-description">
+                        <i class="fas fa-align-left text-blue-500 mr-1 text-xs"></i>
+                        {{ product.description }}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- ===== PRODUCT SPECIFICATIONS ===== -->
+                    {% if product.specs and product.specs|length > 0 %}
+                    <div class="product-specs">
+                        {% for spec in product.specs[:3] %}
+                        <span class="spec-tag">
+                            <i class="fas fa-check-circle"></i> {{ spec }}
+                        </span>
+                        {% endfor %}
+                        {% if product.specs|length > 3 %}
+                        <span class="spec-more">+{{ product.specs|length - 3 }} more</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="product-rating">
+                        {% set rating = product.rating|round(0, 'floor') %}
+                        {% for i in range(5) %}
+                            {% if i < rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                        <span class="text-gray-400 text-xs">({{ product.reviews }})</span>
+                    </div>
+                    <div class="product-price">KSh {{ "%.0f"|format(product.price) }}</div>
+                    <button onclick="addToCart('{{ id }}')" class="btn-add-to-cart">
+                        <i class="fas fa-plus"></i> Add to Cart
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            <div id="noProducts" class="no-products" style="display: none;">
+                <i class="fas fa-box-open"></i>
+                <h3>No products found</h3>
+                <p>Try selecting a different category</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== BUNDLES ===== -->
+    <section id="bundles" class="py-12 px-4 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="section-title">Complete Your Setup</h2>
+                <p class="section-subtitle mx-auto">Useful shopping paths for phones, laptops, audio and accessories.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {% for id, bundle in bundles.items() %}
+                <div class="bundle-card {% if bundle.popular %}popular{% endif %}">
+                    {% if bundle.popular %}
+                    <span class="text-xs font-bold text-yellow-600 bg-yellow-50 px-3 py-1 rounded-full inline-block mb-2">⭐ Best Value</span>
+                    {% endif %}
+                    <img src="{{ bundle.image }}" alt="{{ bundle.name }}" class="bundle-image w-full object-contain" loading="lazy" onerror="this.style.display='none'">
+                    <div class="bundle-name">{{ bundle.name }}</div>
+                    <div class="text-gray-500 text-sm">{{ bundle.products|length }} Products Included</div>
+                    <div class="bundle-price">KSh {{ "%.0f"|format(bundle.price) }}</div>
+                    <div class="bundle-savings">Save KSh {{ "%.0f"|format(bundle.savings) }}</div>
+                    <button onclick="addToCart('{{ id }}')" class="mt-4 w-full py-2 rounded-full bg-[#1e293b] text-white font-semibold hover:bg-[#0f172a] transition">
+                        <i class="fas fa-plus"></i> Add Bundle
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== WHY US ===== -->
+    <section id="about" class="py-12 px-4 bg-[#f8fafc]">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="section-title">Kenya-based Electronics Store for Genuine Tech.</h2>
+                <p class="section-subtitle mx-auto">Shop by category, brand, use case, or curated collection with transparent pricing and delivery support.</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-2xl text-blue-600 mb-3">📦</div>
+                    <h4 class="font-semibold">Same-Day Nairobi</h4>
+                    <p class="text-sm text-gray-500">Fast delivery for eligible Nairobi orders.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-2xl text-blue-600 mb-3">🚚</div>
+                    <h4 class="font-semibold">Next-Day Countrywide</h4>
+                    <p class="text-sm text-gray-500">Reliable delivery across Kenya.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-2xl text-blue-600 mb-3">✅</div>
+                    <h4 class="font-semibold">Genuine Products</h4>
+                    <p class="text-sm text-gray-500">Verified tech from trusted brands.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-2xl text-blue-600 mb-3">🛡️</div>
+                    <h4 class="font-semibold">Official Warranty</h4>
+                    <p class="text-sm text-gray-500">Warranty-backed options where applicable.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="app-footer">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-white text-2xl font-bold flex items-center gap-2">
+                    <i class="fas fa-bolt text-blue-500"></i> Price<span class="text-blue-500">Point</span>
+                </h3>
+                <p class="mt-2 text-sm">Premium electronics for every need. Genuine products, transparent pricing, and fast delivery across Kenya.</p>
+            </div>
+            <div>
+                <h4 class="footer-heading">Shop</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#">All Products</a></li>
+                    <li><a href="#">Bundles</a></li>
+                    <li><a href="#">Best Sellers</a></li>
+                    <li><a href="#">New Arrivals</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-heading">Support</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Returns & Refunds</a></li>
+                    <li><a href="#">Shipping Info</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-heading">Stay Updated</h4>
+                <p class="text-sm text-gray-400 mb-2">Get the latest deals and new arrivals</p>
+                <form class="flex gap-2">
+                    <input type="email" placeholder="Your email" class="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm" />
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 transition">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 mt-10 pt-6 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+            <p>© 2026 <span class="text-white font-medium">Price Point Kenya</span>. All rights reserved.</p>
+            <div class="flex gap-4 mt-2 md:mt-0">
+                <a href="#" class="hover:text-white transition">Privacy Policy</a>
+                <a href="#" class="hover:text-white transition">Terms of Service</a>
+                <a href="#" class="hover:text-white transition">Cookie Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast hidden">
+        <div class="flex items-center gap-3">
+            <i class="fas fa-check-circle text-green-500 text-xl"></i>
+            <p id="toastMessage" class="font-semibold"></p>
+        </div>
+    </div>
+
+    <script>
+        // ===== CATEGORY FILTER =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryPills = document.querySelectorAll('.category-pill');
+            const productCards = document.querySelectorAll('.product-card');
+            const productGrid = document.getElementById('productGrid');
+            const noProducts = document.getElementById('noProducts');
+            const categoryTitle = document.getElementById('categoryTitle');
+            const categorySubtitle = document.getElementById('categorySubtitle');
+            const productCount = document.getElementById('productCount');
+
+            function filterProducts(category) {
+                let visibleCount = 0;
+
+                productCards.forEach(card => {
+                    const cardCategory = card.dataset.category;
+                    if (category === 'all' || cardCategory === category) {
+                        card.style.display = 'flex';
+                        visibleCount++;
+                        card.style.animation = 'none';
+                        setTimeout(() => {
+                            card.style.animation = 'cardPop 0.4s ease-out forwards';
+                        }, 10);
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                productCount.textContent = visibleCount;
+
+                if (visibleCount === 0) {
+                    noProducts.style.display = 'block';
+                    productGrid.style.display = 'none';
+                } else {
+                    noProducts.style.display = 'none';
+                    productGrid.style.display = 'grid';
+                }
+
+                if (category === 'all') {
+                    categoryTitle.textContent = '🔥 All Products';
+                    categorySubtitle.textContent = 'Browse our complete collection of premium electronics';
+                } else {
+                    const activePill = document.querySelector(`.category-pill[data-category="${category}"]`);
+                    const categoryName = activePill ? activePill.textContent.trim().replace(/\d/g, '').trim() : category;
+                    categoryTitle.textContent = `📱 ${categoryName}`;
+                    categorySubtitle.textContent = `Browse our collection of ${categoryName}`;
+                }
+            }
+
+            categoryPills.forEach(pill => {
+                pill.addEventListener('click', function() {
+                    categoryPills.forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    const category = this.dataset.category;
+                    filterProducts(category);
+                });
+            });
+
+            filterProducts('all');
+        });
+
+        // ===== CART COUNT =====
+        function updateCartCount() {
+            const cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
+            document.getElementById('cartCount').textContent = cart.length;
+        }
+        updateCartCount();
+
+        // ===== ADD TO CART =====
+        function addToCart(itemId) {
+            fetch('/add-to-cart/' + itemId, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    showToast(data.success ? 'Added to cart! 🛒' : data.message);
+                    if (data.success) {
+                        const cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
+                        cart.push(itemId);
+                        sessionStorage.setItem('cart', JSON.stringify(cart));
+                        updateCartCount();
+                    }
+                })
+                .catch(() => showToast('Something went wrong'));
+        }
+
+        // ===== TOAST =====
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.remove('hidden');
+            clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        // ===== SCROLL EFFECT =====
+        window.addEventListener('scroll', () => {
+            document.getElementById('mainHeader').classList.toggle('scrolled', window.scrollY > 20);
+        });
+
+        // ===== SMOOTH SCROLL =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+</body>
+</html>

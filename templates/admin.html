@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>Admin Panel · Price Point Kenya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f8fafc; color: #0f172a; min-height: 100vh; }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+
+        /* ===== HEADER ===== */
+        .app-header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #eef2f6;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        .app-header.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+
+        .brand-text {
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+        }
+        .brand-text span { 
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            background: white;
+            border: 1px solid #eef2f6;
+            border-radius: 16px;
+            padding: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: #64748b;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .sidebar-item:hover, .sidebar-item.active {
+            color: #0f172a;
+            background: #f1f5f9;
+        }
+        .sidebar-item i { width: 20px; color: #94a3b8; }
+        .sidebar-item:hover i, .sidebar-item.active i { color: #2563eb; }
+
+        /* ===== STAT CARDS ===== */
+        .stat-card {
+            background: white;
+            border: 1px solid #eef2f6;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            border-color: #2563eb;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        }
+
+        /* ===== GLASS CARD ===== */
+        .glass-card {
+            background: white;
+            border: 1px solid #eef2f6;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .glass-card:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-primary {
+            background: #1e293b;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 9999px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            background: #0f172a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            border: 1px solid #e2e8f0;
+            background: transparent;
+            color: #475569;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .btn-outline:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #eff6ff;
+        }
+
+        /* ===== FORM ===== */
+        .form-input {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            width: 100%;
+            color: #0f172a;
+            transition: all 0.3s;
+            background: white;
+            font-size: 0.9rem;
+        }
+        .form-input::placeholder { color: #94a3b8; }
+        .form-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.06);
+        }
+        .form-label {
+            color: #475569;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .form-label i { color: #2563eb; margin-right: 4px; }
+
+        select.form-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        /* ===== IMAGE UPLOAD ===== */
+        .upload-area {
+            border: 2px dashed #e2e8f0;
+            border-radius: 12px;
+            padding: 25px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8fafc;
+        }
+        .upload-area:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+        .upload-area.dragover {
+            border-color: #2563eb;
+            background: #dbeafe;
+        }
+        .upload-area .icon {
+            font-size: 2.5rem;
+            color: #94a3b8;
+            margin-bottom: 6px;
+        }
+        .upload-area p {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        .upload-area .sub-text {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+        .upload-preview {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 8px;
+            margin-top: 8px;
+            display: none;
+            object-fit: contain;
+        }
+        .upload-preview.visible { display: block; }
+        .image-input-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .image-input-group .form-input {
+            flex: 1;
+            min-width: 150px;
+        }
+        .image-input-group .btn-upload {
+            background: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .image-input-group .btn-upload:hover {
+            background: #1d4ed8;
+            transform: scale(1.02);
+        }
+        .image-input-group .btn-upload:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .image-options {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .image-options button {
+            padding: 6px 16px;
+            border-radius: 9999px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        .image-options button:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+        .image-options button.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        /* ===== TABLE ===== */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #eef2f6;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            border-bottom: 1px solid #eef2f6;
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #0f172a;
+        }
+        tr:hover td { background: #f8fafc; }
+
+        /* ===== BADGE ===== */
+        .badge {
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        .badge-success { background: #dcfce7; color: #16a34a; }
+        .badge-warning { background: #fef3c7; color: #d97706; }
+        .badge-danger { background: #fee2e2; color: #dc2626; }
+        .badge-info { background: #dbeafe; color: #2563eb; }
+        .badge-purple { background: #ede9fe; color: #7c3aed; }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 99999;
+            background: white;
+            border: 1px solid #eef2f6;
+            border-radius: 16px;
+            padding: 16px 24px;
+            animation: slideUp 0.4s ease-out;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            max-width: 400px;
+        }
+        .toast.hidden { display: none; }
+
+        /* ===== ADMIN GRID ===== */
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
+
+        /* ===== SECTION ===== */
+        .section { display: block; animation: fadeIn 0.4s ease; }
+        .section.hidden { display: none; }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.hidden { display: none; }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .modal-content .close-btn {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+        .modal-content .close-btn:hover { color: #0f172a; }
+        .modal-content h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 16px; }
+        .modal-content .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .modal-content .detail-row:last-child { border-bottom: none; }
+        .modal-content .detail-row .label { color: #64748b; font-weight: 500; }
+        .modal-content .detail-row .value { color: #0f172a; font-weight: 600; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .glass-card { padding: 16px; }
+            .app-header .brand-text { font-size: 1.1rem; }
+            .stat-card { padding: 16px; }
+            .modal-content { padding: 20px; margin: 10px; }
+            .upload-area { padding: 15px; }
+            .image-input-group { flex-direction: column; }
+            .image-input-group .btn-upload { width: 100%; }
+        }
+        @media (max-width: 480px) {
+            .glass-card { padding: 12px; }
+            .form-input { font-size: 0.85rem; padding: 8px 12px; }
+            .btn-primary { font-size: 0.85rem; padding: 8px 16px; }
+            .image-options { flex-wrap: wrap; }
+            .image-options button { font-size: 0.7rem; padding: 4px 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="app-header" id="mainHeader">
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+            <a href="/" class="flex items-center gap-2">
+                <i class="fas fa-bolt text-2xl text-blue-600"></i>
+                <span class="brand-text">Price<span>Point</span></span>
+            </a>
+            <div class="flex items-center gap-4">
+                <span class="text-sm text-gray-500 hidden md:block">Welcome, Admin</span>
+                <a href="/admin/logout" class="text-gray-500 hover:text-gray-700 transition text-sm">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="admin-grid">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="mb-4 pb-4 border-b border-gray-100">
+                    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Navigation</p>
+                </div>
+                <a href="#dashboard" class="sidebar-item active" onclick="showSection('dashboard')">
+                    <i class="fas fa-chart-pie"></i> Dashboard
+                </a>
+                <a href="#analytics" class="sidebar-item" onclick="showSection('analytics')">
+                    <i class="fas fa-chart-line"></i> Revenue Analytics
+                </a>
+                <a href="#products" class="sidebar-item" onclick="showSection('products')">
+                    <i class="fas fa-box"></i> Products
+                </a>
+                <a href="#add-product" class="sidebar-item" onclick="showSection('add-product')">
+                    <i class="fas fa-plus-circle"></i> Add Product
+                </a>
+                <a href="#orders" class="sidebar-item" onclick="showSection('orders')">
+                    <i class="fas fa-shopping-cart"></i> Orders
+                </a>
+                <a href="#customers" class="sidebar-item" onclick="showSection('customers')">
+                    <i class="fas fa-users"></i> Customers
+                </a>
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <a href="/" class="sidebar-item">
+                        <i class="fas fa-arrow-left"></i> Back to Shop
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div>
+                <!-- ===== DASHBOARD ===== -->
+                <div id="dashboard-section" class="section">
+                    <h2 class="text-2xl font-bold text-[#0f172a] mb-6">Dashboard</h2>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500 text-sm">Total Products</span>
+                                <i class="fas fa-box text-blue-500 text-xl"></i>
+                            </div>
+                            <p class="text-2xl font-bold text-[#0f172a] mt-2">{{ stats.total_products if stats else 0 }}</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500 text-sm">Total Bundles</span>
+                                <i class="fas fa-gift text-purple-500 text-xl"></i>
+                            </div>
+                            <p class="text-2xl font-bold text-[#0f172a] mt-2">{{ stats.total_bundles if stats else 0 }}</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500 text-sm">Orders</span>
+                                <i class="fas fa-shopping-bag text-yellow-500 text-xl"></i>
+                            </div>
+                            <p class="text-2xl font-bold text-[#0f172a] mt-2">{{ stats.total_orders if stats else 0 }}</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500 text-sm">Pending</span>
+                                <i class="fas fa-clock text-orange-500 text-xl"></i>
+                            </div>
+                            <p class="text-2xl font-bold text-[#0f172a] mt-2">{{ stats.pending_orders if stats else 0 }}</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500 text-sm">Low Stock</span>
+                                <i class="fas fa-exclamation-triangle text-red-500 text-xl"></i>
+                            </div>
+                            <p class="text-2xl font-bold text-[#0f172a] mt-2">{{ stats.low_stock if stats else 0 }}</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3 class="font-semibold text-[#0f172a] mb-4">Recent Activity</h3>
+                        <div class="space-y-2 text-sm text-gray-500">
+                            {% if orders and orders|length > 0 %}
+                                {% for order in orders[:3] %}
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                                    <span>🛒 New order #{{ order.order_id or order.id }} placed</span>
+                                    <span class="text-xs text-gray-400">{{ order.status or 'Pending' }}</span>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="py-2 text-gray-400">No orders yet.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== REVENUE ANALYTICS ===== -->
+                <div id="analytics-section" class="section hidden">
+                    <h2 class="text-2xl font-bold text-[#0f172a] mb-6">Revenue & Profit Analytics</h2>
+                    
+                    <!-- Summary Stats -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500 text-sm">Total Revenue</span>
+                                <i class="fas fa-currency-sign text-green-500 text-xl"></i>
+                            </div>
+                            <p class="text-2xl font-bold text-green-600 mt-2" id="totalRevenue">KSh 0</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500 text-sm">Total Cost</span>
+                                <i class="fas fa-shopping-cart text-blue-500 text-xl"></i>
+                            </div>
+                            <p class="text-2xl font-bold text-blue-600 mt-2" id="totalCost">KSh 0</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500 text-sm">Total Profit</span>
+                                <i class="fas fa-chart-line text-purple-500 text-xl"></i>
+                            </div>
+                            <p class="text-2xl font-bold text-purple-600 mt-2" id="totalProfit">KSh 0</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500 text-sm">Total Orders</span>
+                                <i class="fas fa-shopping-bag text-yellow-500 text-xl"></i>
+                            </div>
+                            <p class="text-2xl font-bold text-yellow-600 mt-2" id="totalOrders">0</p>
+                        </div>
+                    </div>
+
+                    <!-- Profit Overview -->
+                    <div class="glass-card mb-6">
+                        <h3 class="font-semibold text-[#0f172a] mb-4">Profit Overview</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-green-50 p-4 rounded-xl border border-green-200">
+                                <p class="text-sm text-gray-500">Revenue</p>
+                                <p class="text-2xl font-bold text-green-600" id="revRevenue">KSh 0</p>
+                                <p class="text-xs text-gray-400">Total sales amount</p>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-xl border border-purple-200">
+                                <p class="text-sm text-gray-500">Profit</p>
+                                <p class="text-2xl font-bold text-purple-600" id="revProfit">KSh 0</p>
+                                <p class="text-xs text-gray-400">Revenue - Cost</p>
+                            </div>
+                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                                <p class="text-sm text-gray-500">Profit Margin</p>
+                                <p class="text-2xl font-bold text-blue-600" id="profitMargin">0%</p>
+                                <p class="text-xs text-gray-400">(Profit ÷ Revenue) × 100</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Breakdown -->
+                    <div class="glass-card mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-[#0f172a]">Monthly Performance</h3>
+                            <span class="text-xs text-gray-400">Revenue breakdown by month</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left text-xs text-gray-400 font-semibold uppercase tracking-wider py-2">Month</th>
+                                        <th class="text-right text-xs text-gray-400 font-semibold uppercase tracking-wider py-2">Orders</th>
+                                        <th class="text-right text-xs text-gray-400 font-semibold uppercase tracking-wider py-2">Items</th>
+                                        <th class="text-right text-xs text-gray-400 font-semibold uppercase tracking-wider py-2">Revenue</th>
+                                        <th class="text-right text-xs text-gray-400 font-semibold uppercase tracking-wider py-2">Cost</th>
+                                        <th class="text-right text-xs text-gray-400 font-semibold uppercase tracking-wider py-2">Profit</th>
+                                        <th class="text-right text-xs text-gray-400 font-semibold uppercase tracking-wider py-2">Margin</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="monthlyTable">
+                                    <tr><td colspan="7" class="text-center py-4 text-gray-400">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Top Products -->
+                    <div class="glass-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-[#0f172a]">Top Selling Products</h3>
+                            <span class="text-xs text-gray-400">By profit generated</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left text-xs text-gray-400 font-semibold uppercase tracking-wider py-2">Product</th>
+                                        <th class="text-right text-xs text-gray-400 font-semibold uppercase tracking-wider py-2">Quantity</th>
+                                        <th class="text-right text-xs text-gray-400 font-semibold uppercase tracking-wider py-2">Revenue</th>
+                                        <th class="text-right text-xs text-gray-400 font-semibold uppercase tracking-wider py-2">Cost</th>
+                                        <th class="text-right text-xs text-gray-400 font-semibold uppercase tracking-wider py-2">Profit</th>
+                                        <th class="text-right text-xs text-gray-400 font-semibold uppercase tracking-wider py-2">Margin</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productTable">
+                                    <tr><td colspan="6" class="text-center py-4 text-gray-400">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== PRODUCTS ===== -->
+                <div id="products-section" class="section hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-[#0f172a]">Products</h2>
+                        <button onclick="showSection('add-product')" class="btn-primary">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Selling Price</th>
+                                    <th>Cost Price</th>
+                                    <th>Profit</th>
+                                    <th>Stock</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in products %}
+                                <tr>
+                                    <td>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-lg overflow-hidden bg-gray-50 flex-shrink-0">
+                                                <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-semibold text-[#0f172a]">{{ product.name }}</p>
+                                                <p class="text-xs text-gray-400">{{ product.id }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge badge-info">{{ product.category }}</span></td>
+                                    <td class="font-semibold">KSh {{ "%.0f"|format(product.price) }}</td>
+                                    <td class="text-gray-600">KSh {{ "%.0f"|format(product.cost_price or 0) }}</td>
+                                    <td class="{% if (product.price - (product.cost_price or 0)) > 0 %}text-green-600{% else %}text-red-600{% endif %} font-semibold">
+                                        KSh {{ "%.0f"|format((product.price - (product.cost_price or 0))|abs) }}
+                                    </td>
+                                    <td>
+                                        {% if product.stock < 10 %}
+                                            <span class="badge badge-danger">{{ product.stock }}</span>
+                                        {% elif product.stock < 30 %}
+                                            <span class="badge badge-warning">{{ product.stock }}</span>
+                                        {% else %}
+                                            <span class="badge badge-success">{{ product.stock }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if product.badge %}
+                                            <span class="badge badge-purple">{{ product.badge }}</span>
+                                        {% else %}
+                                            <span class="badge badge-success">In Stock</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="flex gap-2">
+                                            <button class="btn-outline text-xs" onclick="editProduct('{{ product.id }}')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn-danger text-xs" onclick="deleteProduct('{{ product.id }}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ===== ADD PRODUCT ===== -->
+                <div id="add-product-section" class="section hidden">
+                    <h2 class="text-2xl font-bold text-[#0f172a] mb-6">Add New Product</h2>
+                    
+                    <div class="glass-card">
+                        <form id="productForm" onsubmit="saveProduct(event)">
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="form-label"><i class="fas fa-tag"></i> Product ID</label>
+                                    <input type="text" id="prodId" class="form-input" placeholder="e.g. iphone_15_pro" required>
+                                </div>
+                                <div>
+                                    <label class="form-label"><i class="fas fa-heading"></i> Product Name</label>
+                                    <input type="text" id="prodName" class="form-input" placeholder="e.g. iPhone 15 Pro Max" required>
+                                </div>
+                                <div>
+                                    <label class="form-label"><i class="fas fa-folder"></i> Category</label>
+                                    <select id="prodCategory" class="form-input" required>
+                                        <option value="">Select Category</option>
+                                        <option value="Phones">📱 Phones</option>
+                                        <option value="Laptops">💻 Laptops</option>
+                                        <option value="Accessories">🎧 Accessories</option>
+                                        <option value="Wearables">⌚ Wearables</option>
+                                        <option value="Audio">🎵 Audio</option>
+                                        <option value="Televisions">📺 Televisions</option>
+                                        <option value="Gaming">🎮 Gaming</option>
+                                        <option value="Tablets">📱 Tablets</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="form-label"><i class="fas fa-coin"></i> Selling Price (KES)</label>
+                                    <input type="number" id="prodPrice" class="form-input" placeholder="e.g. 245000" required>
+                                </div>
+                                <div>
+                                    <label class="form-label"><i class="fas fa-shopping-cart"></i> Cost Price (KES)</label>
+                                    <input type="number" id="prodCost" class="form-input" placeholder="e.g. 200000" required>
+                                </div>
+                                <div>
+                                    <label class="form-label"><i class="fas fa-tag"></i> Original Price (KES)</label>
+                                    <input type="number" id="prodOriginal" class="form-input" placeholder="e.g. 265000">
+                                </div>
+                                <div>
+                                    <label class="form-label"><i class="fas fa-boxes"></i> Stock</label>
+                                    <input type="number" id="prodStock" class="form-input" placeholder="e.g. 25" required>
+                                </div>
+                                <div>
+                                    <label class="form-label"><i class="fas fa-star"></i> Rating</label>
+                                    <input type="number" id="prodRating" class="form-input" placeholder="e.g. 4.9" step="0.1" value="4.5">
+                                </div>
+                                <div>
+                                    <label class="form-label"><i class="fas fa-medal"></i> Badge</label>
+                                    <select id="prodBadge" class="form-input">
+                                        <option value="">None</option>
+                                        <option value="Best Seller">⭐ Best Seller</option>
+                                        <option value="New">🌟 New</option>
+                                        <option value="Trending">🔥 Trending</option>
+                                        <option value="Editor's Pick">✏️ Editor's Pick</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Image Upload -->
+                                <div class="md:col-span-2">
+                                    <label class="form-label"><i class="fas fa-image"></i> Product Image</label>
+                                    <div class="image-options">
+                                        <button type="button" class="active" onclick="switchImageMethod('url')" id="urlTab">
+                                            <i class="fas fa-link"></i> URL
+                                        </button>
+                                        <button type="button" onclick="switchImageMethod('upload')" id="uploadTab">
+                                            <i class="fas fa-upload"></i> Upload
+                                        </button>
+                                    </div>
+                                    <div id="urlMethod" class="image-input-group">
+                                        <input type="url" id="prodImage" class="form-input" placeholder="https://images.unsplash.com/photo-..." />
+                                    </div>
+                                    <div id="uploadMethod" class="upload-area" style="display: none;" onclick="document.getElementById('fileInput').click()">
+                                        <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileUpload(this)" />
+                                        <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                                        <p>Click to upload or drag and drop</p>
+                                        <span class="sub-text">PNG, JPG, JPEG, GIF, WEBP (Max 5MB)</span>
+                                    </div>
+                                    <img id="imagePreview" class="upload-preview" alt="Preview" />
+                                </div>
+                                
+                                <div class="md:col-span-2">
+                                    <label class="form-label"><i class="fas fa-align-left"></i> Description</label>
+                                    <textarea id="prodDesc" class="form-input" rows="3" placeholder="Product description..." required></textarea>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="form-label"><i class="fas fa-list"></i> Specifications (comma separated)</label>
+                                    <input type="text" id="prodSpecs" class="form-input" placeholder="e.g. 256GB Storage, 8GB RAM, 48MP Camera">
+                                </div>
+                            </div>
+                            <div class="flex gap-4 mt-6">
+                                <button type="submit" class="btn-primary" id="saveBtn">
+                                    <i class="fas fa-save"></i> Save Product
+                                </button>
+                                <button type="button" onclick="showSection('products')" class="btn-outline">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ===== ORDERS ===== -->
+                <div id="orders-section" class="section hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-[#0f172a]">Orders</h2>
+                        <span class="text-sm text-gray-400">{{ orders|length if orders else 0 }} total orders</span>
+                    </div>
+                    <div class="glass-card">
+                        {% if orders and orders|length > 0 %}
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in orders %}
+                                    <tr>
+                                        <td class="font-semibold text-[#0f172a]">{{ order.order_id or order.id }}</td>
+                                        <td>
+                                            <div>
+                                                <p class="text-sm font-medium text-[#0f172a]">{{ order.customer.name if order.customer and order.customer.name else 'Customer' }}</p>
+                                                <p class="text-xs text-gray-400">{{ order.customer.email if order.customer and order.customer.email else '' }}</p>
+                                            </div>
+                                        </td>
+                                        <td class="font-semibold">KSh {{ "%.0f"|format(order.total or 0) }}</td>
+                                        <td>
+                                            <select onchange="updateOrderStatus('{{ order.order_id }}', this.value)" 
+                                                    class="text-sm font-semibold border rounded px-2 py-1 {% if order.status == 'pending' %}border-yellow-400 text-yellow-600 bg-yellow-50{% elif order.status == 'confirmed' %}border-blue-400 text-blue-600 bg-blue-50{% elif order.status == 'shipped' %}border-purple-400 text-purple-600 bg-purple-50{% elif order.status == 'delivered' %}border-green-400 text-green-600 bg-green-50{% endif %}">
+                                                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>⏳ Pending</option>
+                                                <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>✅ Confirmed</option>
+                                                <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>📦 Shipped</option>
+                                                <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>🎯 Delivered</option>
+                                            </select>
+                                        </td>
+                                        <td class="text-sm text-gray-400">{{ order.created_at[:10] if order.created_at else '' }}</td>
+                                        <td>
+                                            <button onclick="viewOrder('{{ order.order_id }}')" class="text-blue-600 hover:text-blue-800 text-sm mr-2" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p class="text-gray-400 text-center py-12">No orders yet. Check back later.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- ===== CUSTOMERS ===== -->
+                <div id="customers-section" class="section hidden">
+                    <h2 class="text-2xl font-bold text-[#0f172a] mb-6">Customers</h2>
+                    <div class="glass-card">
+                        {% set customer_list = {} %}
+                        {% for order in orders %}
+                            {% if order.customer and order.customer.name %}
+                                {% set name = order.customer.name %}
+                                {% if name not in customer_list %}
+                                    {% set _ = customer_list.update({name: {'email': order.customer.email, 'phone': order.customer.phone, 'orders': 0}}) %}
+                                {% endif %}
+                                {% set _ = customer_list[name].update({'orders': customer_list[name].orders + 1}) %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if customer_list|length > 0 %}
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Customer Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Orders</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for name, info in customer_list.items() %}
+                                    <tr>
+                                        <td class="font-semibold text-[#0f172a]">{{ name }}</td>
+                                        <td>{{ info.email or 'N/A' }}</td>
+                                        <td>{{ info.phone or 'N/A' }}</td>
+                                        <td><span class="badge badge-info">{{ info.orders }}</span></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p class="text-gray-400 text-center py-12">No customer data available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ORDER DETAIL MODAL ===== -->
+    <div id="orderModal" class="modal-overlay hidden" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h3><i class="fas fa-receipt text-blue-600 mr-2"></i> Order Details</h3>
+            <div id="orderDetails">
+                <p class="text-gray-400 text-center py-4">Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast hidden">
+        <div class="flex items-center gap-3">
+            <i class="fas fa-check-circle text-green-500 text-xl" id="toastIcon"></i>
+            <p id="toastMessage" class="font-semibold text-[#0f172a]"></p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // IMAGE UPLOAD
+        // ============================================================
+        let currentImageMethod = 'url';
+
+        function switchImageMethod(method) {
+            currentImageMethod = method;
+            if (method === 'url') {
+                document.getElementById('urlMethod').style.display = 'flex';
+                document.getElementById('uploadMethod').style.display = 'none';
+                document.getElementById('urlTab').classList.add('active');
+                document.getElementById('uploadTab').classList.remove('active');
+            } else {
+                document.getElementById('urlMethod').style.display = 'none';
+                document.getElementById('uploadMethod').style.display = 'block';
+                document.getElementById('uploadTab').classList.add('active');
+                document.getElementById('urlTab').classList.remove('active');
+            }
+        }
+
+        function handleFileUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/admin/upload-image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('prodImage').value = data.url;
+                    showPreview(data.url);
+                    showToast('✅ Image uploaded successfully!');
+                } else {
+                    showToast('❌ ' + data.message);
+                }
+            })
+            .catch(err => showToast('❌ Upload failed: ' + err.message));
+        }
+
+        function showPreview(url) {
+            const preview = document.getElementById('imagePreview');
+            preview.src = url;
+            preview.classList.add('visible');
+        }
+
+        // Drag and drop support
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadMethod');
+            if (uploadArea) {
+                uploadArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('dragover');
+                });
+                uploadArea.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                });
+                uploadArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        document.getElementById('fileInput').files = files;
+                        handleFileUpload(document.getElementById('fileInput'));
+                    }
+                });
+            }
+
+            // Auto-preview URL input
+            const urlInput = document.getElementById('prodImage');
+            if (urlInput) {
+                urlInput.addEventListener('input', function() {
+                    if (this.value) showPreview(this.value);
+                });
+            }
+        });
+
+        // ============================================================
+        // SECTION NAVIGATION
+        // ============================================================
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(section + '-section');
+            if (target) target.classList.remove('hidden');
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            const activeItem = document.querySelector(`.sidebar-item[href="#${section}"]`);
+            if (activeItem) activeItem.classList.add('active');
+            
+            if (section === 'analytics') loadAnalytics();
+        }
+
+        // ============================================================
+        // ANALYTICS
+        // ============================================================
+        function loadAnalytics() {
+            fetch('/admin/api/analytics')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error loading analytics:', data.error);
+                        return;
+                    }
+                    
+                    document.getElementById('totalRevenue').textContent = 'KSh ' + formatNumber(data.total_revenue);
+                    document.getElementById('totalCost').textContent = 'KSh ' + formatNumber(data.total_cost);
+                    document.getElementById('totalProfit').textContent = 'KSh ' + formatNumber(data.total_profit);
+                    document.getElementById('totalOrders').textContent = data.total_orders;
+                    
+                    document.getElementById('revRevenue').textContent = 'KSh ' + formatNumber(data.total_revenue);
+                    document.getElementById('revProfit').textContent = 'KSh ' + formatNumber(data.total_profit);
+                    const margin = data.total_revenue > 0 ? ((data.total_profit / data.total_revenue) * 100) : 0;
+                    document.getElementById('profitMargin').textContent = margin.toFixed(1) + '%';
+                    
+                    updateMonthlyTable(data.monthly_data);
+                    updateProductTable(data.all_product_sales);
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    document.querySelector('#monthlyTable').innerHTML = '<tr><td colspan="7" class="text-center py-4 text-red-400">Error loading data</td></tr>';
+                    document.querySelector('#productTable').innerHTML = '<tr><td colspan="6" class="text-center py-4 text-red-400">Error loading data</td></tr>';
+                });
+        }
+
+        function updateMonthlyTable(monthlyData) {
+            const tbody = document.getElementById('monthlyTable');
+            const months = Object.keys(monthlyData).sort();
+            
+            if (months.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-gray-400">No orders yet</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = months.map(month => {
+                const data = monthlyData[month];
+                const margin = data.revenue > 0 ? ((data.profit / data.revenue) * 100) : 0;
+                return `
+                    <tr class="border-b border-gray-100">
+                        <td class="py-2 font-medium text-[#0f172a]">${month}</td>
+                        <td class="py-2 text-right text-gray-600">${data.orders}</td>
+                        <td class="py-2 text-right text-gray-600">${data.items}</td>
+                        <td class="py-2 text-right text-green-600 font-semibold">KSh ${formatNumber(data.revenue)}</td>
+                        <td class="py-2 text-right text-blue-600 font-semibold">KSh ${formatNumber(data.cost)}</td>
+                        <td class="py-2 text-right text-purple-600 font-semibold">KSh ${formatNumber(data.profit)}</td>
+                        <td class="py-2 text-right ${margin > 20 ? 'text-green-600' : margin > 10 ? 'text-yellow-600' : 'text-red-600'} font-semibold">${margin.toFixed(1)}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateProductTable(productSales) {
+            const tbody = document.getElementById('productTable');
+            const products = Object.entries(productSales);
+            
+            if (products.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-400">No sales yet</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = products.slice(0, 15).map(([name, data]) => {
+                const margin = data.revenue > 0 ? ((data.profit / data.revenue) * 100) : 0;
+                return `
+                    <tr class="border-b border-gray-100">
+                        <td class="py-2 font-medium text-[#0f172a]">${name}</td>
+                        <td class="py-2 text-right text-gray-600">${data.quantity}</td>
+                        <td class="py-2 text-right text-green-600 font-semibold">KSh ${formatNumber(data.revenue)}</td>
+                        <td class="py-2 text-right text-blue-600 font-semibold">KSh ${formatNumber(data.cost)}</td>
+                        <td class="py-2 text-right text-purple-600 font-semibold">KSh ${formatNumber(data.profit)}</td>
+                        <td class="py-2 text-right ${margin > 20 ? 'text-green-600' : margin > 10 ? 'text-yellow-600' : 'text-red-600'} font-semibold">${margin.toFixed(1)}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function formatNumber(num) {
+            return Number(num).toLocaleString('en-KE');
+        }
+
+        // ============================================================
+        // PRODUCT MANAGEMENT
+        // ============================================================
+        function saveProduct(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('saveBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            const data = {
+                id: document.getElementById('prodId').value,
+                name: document.getElementById('prodName').value,
+                category: document.getElementById('prodCategory').value,
+                price: parseFloat(document.getElementById('prodPrice').value),
+                cost_price: parseFloat(document.getElementById('prodCost').value) || 0,
+                original_price: parseFloat(document.getElementById('prodOriginal').value) || null,
+                stock: parseInt(document.getElementById('prodStock').value),
+                rating: parseFloat(document.getElementById('prodRating').value),
+                badge: document.getElementById('prodBadge').value,
+                image: document.getElementById('prodImage').value,
+                description: document.getElementById('prodDesc').value,
+                specs: document.getElementById('prodSpecs').value.split(',').map(s => s.trim()).filter(s => s)
+            };
+
+            fetch('/admin/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(data)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.success) {
+                    showToast('✅ Product saved successfully!');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast('❌ Error: ' + (data.message || 'Unknown error'));
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            })
+            .catch(error => {
+                showToast('❌ Error: ' + error.message);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
+
+        function deleteProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+            
+            fetch(`/admin/products/${productId}`, {
+                method: 'DELETE'
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('✅ Product deleted successfully!');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast('❌ Error deleting product');
+                }
+            })
+            .catch(err => showToast('❌ Error: ' + err.message));
+        }
+
+        function editProduct(productId) {
+            showToast('✏️ Edit feature coming soon!');
+        }
+
+        // ============================================================
+        // ORDER MANAGEMENT
+        // ============================================================
+        function updateOrderStatus(orderId, newStatus) {
+            fetch(`/admin/orders/${orderId}/status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('✅ Order status updated!');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast('❌ Error updating status');
+                }
+            })
+            .catch(err => showToast('❌ Error: ' + err.message));
+        }
+
+        function viewOrder(orderId) {
+            const modal = document.getElementById('orderModal');
+            const details = document.getElementById('orderDetails');
+            
+            details.innerHTML = '<p class="text-gray-400 text-center py-4">Loading...</p>';
+            modal.classList.remove('hidden');
+
+            fetch(`/api/orders/${orderId}`)
+            .then(r => r.json())
+            .then(order => {
+                details.innerHTML = `
+                    <div class="detail-row">
+                        <span class="label">Order ID</span>
+                        <span class="value">${order.order_id}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Customer</span>
+                        <span class="value">${order.customer?.name || 'Customer'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Email</span>
+                        <span class="value">${order.customer?.email || 'N/A'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Phone</span>
+                        <span class="value">${order.customer?.phone || 'N/A'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Address</span>
+                        <span class="value">${order.customer?.address || 'N/A'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Status</span>
+                        <span class="value"><span class="badge ${order.status == 'pending' ? 'badge-warning' : 'badge-success'}">${order.status || 'Pending'}</span></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Date</span>
+                        <span class="value">${order.created_at ? order.created_at.slice(0, 10) : 'N/A'}</span>
+                    </div>
+                    <div class="detail-row" style="border-top: 2px solid #2563eb; padding-top: 12px;">
+                        <span class="label font-bold">Total</span>
+                        <span class="value font-bold text-blue-600">KSh ${order.total}</span>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #eef2f6;">
+                        <h4 class="font-semibold text-[#0f172a] text-sm mb-2">Items</h4>
+                        ${(order.items || []).map(item => `
+                            <div class="flex justify-between py-1 border-b border-gray-100 text-sm">
+                                <span>${item.name} × ${item.quantity}</span>
+                                <span class="font-semibold">KSh ${item.total}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            })
+            .catch(err => {
+                details.innerHTML = `<p class="text-red-500 text-center py-4">Error loading order: ${err.message}</p>`;
+            });
+        }
+
+        function closeModal(event) {
+            if (!event || event.target.classList.contains('modal-overlay') || event.target.classList.contains('close-btn')) {
+                document.getElementById('orderModal').classList.add('hidden');
+            }
+        }
+
+        // ============================================================
+        // TOAST NOTIFICATIONS
+        // ============================================================
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.remove('hidden');
+            clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('dashboard');
+        });
+
+        // Click outside modal to close
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-overlay')) closeModal();
+        });
+
+        // ESC key to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>
