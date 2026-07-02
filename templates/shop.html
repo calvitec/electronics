@@ -24,20 +24,34 @@
     <meta name="twitter:image" content="https://www.apexbuilt.site/static/logo.png" />
     
     <!-- Favicon -->
-    <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
     
     <!-- ===== GOOGLE ADSENSE ===== -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9089705612009536" crossorigin="anonymous"></script>
     
-    <!-- ===== STYLES ===== -->
-    <script src="https://cdn.tailwindcss.com" defer></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    
+    <!-- ===== CRITICAL CSS (INLINE FOR SPEED) ===== -->
     <style>
+        /* Critical CSS - loads immediately */
         * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #f8fafc; color: #0f172a; overflow-x: hidden; }
-
+        .app-header { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #eef2f6; position: sticky; top: 0; z-index: 1000; transition: all 0.3s ease; }
+        .app-header.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        .brand-text { font-size: 1.25rem; font-weight: 800; }
+        .brand-text span { color: #2563eb; }
+        .container-full { max-width: 100%; padding-left: 16px; padding-right: 16px; }
+        @media (min-width: 1280px) { .container-full { padding-left: 32px; padding-right: 32px; } }
+    </style>
+    
+    <!-- ===== NON-CRITICAL CSS (LOADED WITH DEFER) ===== -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    </noscript>
+    
+    <style>
         /* ===== ANIMATIONS ===== */
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -50,21 +64,7 @@
         .animate-zoom { animation: zoomIn 1s ease-out forwards; }
         .animate-float { animation: float 3s ease-in-out infinite; }
 
-        /* ===== HEADER / NAVBAR ===== */
-        .app-header {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid #eef2f6;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-        .app-header.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
-        .brand-text { font-size: 1.25rem; font-weight: 800; }
-        .brand-text span { color: #2563eb; }
-
+        /* ===== NAVIGATION ===== */
         .nav-link {
             color: #475569;
             font-weight: 500;
@@ -73,6 +73,7 @@
             border-radius: 8px;
             transition: all 0.2s;
             text-decoration: none;
+            display: inline-block;
         }
         .nav-link:hover, .nav-link.active { background: #f1f5f9; color: #0f172a; }
         .nav-link i { margin-right: 6px; }
@@ -91,21 +92,43 @@
             right: -8px;
         }
 
+        /* ===== MOBILE MENU ===== */
+        #mobileMenu {
+            background: white;
+            border-bottom: 1px solid #eef2f6;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        #mobileMenu.open { max-height: 400px; }
+        #mobileMenu .mobile-nav-link {
+            display: block;
+            padding: 10px 16px;
+            color: #475569;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s;
+        }
+        #mobileMenu .mobile-nav-link:hover { background: #f8fafc; color: #0f172a; }
+        #mobileMenu .mobile-nav-link i { margin-right: 10px; width: 20px; }
+
         /* ===== HERO ===== */
         .hero-section {
             position: relative;
-            min-height: 420px;
+            min-height: 380px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            padding: 40px 20px;
+            padding: 30px 20px;
         }
         .hero-section .hero-bg {
             position: absolute;
             inset: 0;
             background: linear-gradient(135deg, rgba(15,23,42,0.75) 0%, rgba(15,23,42,0.5) 50%, rgba(15,23,42,0.3) 100%),
-                        url('https://images.unsplash.com/photo-1498049794561-7780e7231661?w=1600&h=600&fit=crop&auto=format') center/cover no-repeat;
+                        url('https://images.unsplash.com/photo-1498049794561-7780e7231661?w=800&h=400&fit=crop&auto=format&q=80') center/cover no-repeat;
             z-index: 0;
         }
         .hero-section .hero-content {
@@ -116,7 +139,7 @@
             margin: 0 auto;
         }
         .hero-title {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             font-weight: 800;
             line-height: 1.1;
             color: white;
@@ -125,7 +148,7 @@
         }
         .hero-title .highlight { color: #60a5fa; }
         .hero-subtitle {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: rgba(255,255,255,0.85);
             line-height: 1.6;
             margin-bottom: 1.2rem;
@@ -142,20 +165,18 @@
             padding: 4px 16px;
             border-radius: 9999px;
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #93c5fd;
             border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
         }
-        .hero-badge i { color: #60a5fa; }
-
         .hero-btn-primary {
             background: white;
             color: #0f172a;
-            padding: 12px 32px;
+            padding: 10px 28px;
             border-radius: 9999px;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: all 0.3s;
             display: inline-flex;
             align-items: center;
@@ -163,39 +184,38 @@
             text-decoration: none;
             box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         }
-        .hero-btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
+        .hero-btn-primary:hover { transform: translateY(-2px) scale(1.02); }
         .hero-btn-secondary {
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.2);
             color: white;
-            padding: 12px 32px;
+            padding: 10px 28px;
             border-radius: 9999px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: all 0.3s;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             text-decoration: none;
         }
-        .hero-btn-secondary:hover { background: rgba(255,255,255,0.2); transform: translateY(-3px) scale(1.02); }
-
+        .hero-btn-secondary:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px) scale(1.02); }
         .hero-features {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
-            margin-top: 24px;
+            gap: 16px;
+            margin-top: 20px;
         }
-        .hero-features span { color: rgba(255,255,255,0.75); font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
+        .hero-features span { color: rgba(255,255,255,0.75); font-size: 0.8rem; display: flex; align-items: center; gap: 6px; }
         .hero-features span i { color: #60a5fa; }
 
-        /* ===== SEARCH BAR ===== */
+        /* ===== SEARCH ===== */
         .search-container {
             background: white;
             border-radius: 14px;
-            padding: 10px 14px;
+            padding: 8px 12px;
             border: 1px solid #eef2f6;
             transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(0,0,0,0.02);
@@ -203,49 +223,47 @@
         .search-container:focus-within { border-color: #2563eb; box-shadow: 0 4px 20px rgba(37,99,235,0.08); }
         .search-input {
             width: 100%;
-            padding: 10px 14px 10px 40px;
+            padding: 8px 12px 8px 36px;
             border-radius: 10px;
             border: none;
             outline: none;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
+            font-size: 0.85rem;
             background: #f8fafc;
             -webkit-appearance: none;
         }
         .search-input:focus { background: white; }
-        .search-input::placeholder { color: #94a3b8; font-size: 0.85rem; }
+        .search-input::placeholder { color: #94a3b8; font-size: 0.8rem; }
         .search-icon {
             position: absolute;
-            left: 14px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
             color: #94a3b8;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             pointer-events: none;
         }
         .search-clear {
             position: absolute;
-            right: 12px;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
             color: #94a3b8;
             background: none;
             border: none;
             cursor: pointer;
-            padding: 4px 8px;
+            padding: 2px 6px;
             border-radius: 50%;
             transition: all 0.2s;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             display: none;
         }
-        .search-clear:hover { background: #f1f5f9; color: #0f172a; }
 
         /* ===== CATEGORY PILLS ===== */
         .category-scroll {
             display: flex;
             gap: 6px;
             overflow-x: auto;
-            padding: 4px 0 8px;
+            padding: 4px 0 6px;
             scrollbar-width: none;
             -webkit-overflow-scrolling: touch;
         }
@@ -254,9 +272,9 @@
         .category-pill {
             background: white;
             border: 1px solid #eef2f6;
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 9999px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
             color: #64748b;
             transition: all 0.2s;
@@ -266,27 +284,25 @@
             align-items: center;
             gap: 4px;
             flex-shrink: 0;
-            -webkit-tap-highlight-color: transparent;
-            min-height: 36px;
+            min-height: 32px;
         }
         .category-pill:active { transform: scale(0.96); }
-        .category-pill:hover { background: #f1f5f9; transform: translateY(-1px); }
+        .category-pill:hover { background: #f1f5f9; }
         .category-pill.active { background: #1e293b; color: white; border-color: #1e293b; }
         .category-pill .count {
             background: rgba(255,255,255,0.15);
-            padding: 0px 6px;
+            padding: 0px 5px;
             border-radius: 9999px;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             font-weight: 700;
         }
         .category-pill.active .count { background: rgba(255,255,255,0.2); }
-        .category-pill i { font-size: 0.65rem; }
 
         /* ===== PRODUCT CARDS ===== */
         .product-card {
             background: white;
             border-radius: 14px;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #eef2f6;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
@@ -295,10 +311,9 @@
             flex-direction: column;
         }
         .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.04); border-color: #2563eb; }
-        .product-card:active { transform: scale(0.97); }
         .product-card .product-image {
             width: 100%;
-            height: 170px;
+            height: 160px;
             object-fit: contain;
             background: #f8fafc;
             border-radius: 10px;
@@ -309,7 +324,7 @@
         .product-card:hover .product-image { transform: scale(1.03); }
         .product-card .product-name {
             font-weight: 600;
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             color: #0f172a;
             margin-bottom: 2px;
             flex-grow: 1;
@@ -320,7 +335,7 @@
             overflow: hidden;
         }
         .product-card .product-category {
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             color: #94a3b8;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -328,14 +343,14 @@
         }
         .product-card .product-price {
             font-weight: 700;
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             color: #0f172a;
             margin: 4px 0;
         }
         .product-card .product-rating {
             color: #f59e0b;
-            font-size: 0.7rem;
-            margin-bottom: 6px;
+            font-size: 0.65rem;
+            margin-bottom: 4px;
         }
         .product-card .badge {
             position: absolute;
@@ -343,9 +358,9 @@
             left: 8px;
             background: #2563eb;
             color: white;
-            font-size: 0.55rem;
+            font-size: 0.5rem;
             font-weight: 700;
-            padding: 2px 12px;
+            padding: 2px 10px;
             border-radius: 9999px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -356,41 +371,41 @@
 
         .product-description {
             color: #64748b;
-            font-size: 0.78rem;
-            line-height: 1.4;
-            margin-top: 4px;
+            font-size: 0.7rem;
+            line-height: 1.3;
+            margin-top: 2px;
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 1;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
         .product-specs {
-            margin-top: 6px;
+            margin-top: 4px;
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
+            gap: 3px;
         }
         .product-specs .spec-tag {
             display: inline-block;
             background: #f1f5f9;
             border: 1px solid #e2e8f0;
             border-radius: 9999px;
-            padding: 1px 10px;
-            font-size: 0.6rem;
+            padding: 1px 8px;
+            font-size: 0.5rem;
             font-weight: 500;
             color: #475569;
         }
-        .product-specs .spec-tag i { color: #2563eb; margin-right: 3px; font-size: 0.5rem; }
-        .product-specs .spec-more { font-size: 0.6rem; color: #94a3b8; display: inline-flex; align-items: center; }
+        .product-specs .spec-tag i { color: #2563eb; margin-right: 2px; font-size: 0.4rem; }
+        .product-specs .spec-more { font-size: 0.5rem; color: #94a3b8; }
 
         .btn-add-to-cart {
             background: #f1f5f9;
             color: #0f172a;
             border: none;
-            padding: 9px;
+            padding: 8px;
             border-radius: 9999px;
             font-weight: 600;
-            font-size: 0.78rem;
+            font-size: 0.7rem;
             transition: all 0.3s;
             cursor: pointer;
             width: 100%;
@@ -399,7 +414,7 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            min-height: 44px;
+            min-height: 38px;
         }
         .btn-add-to-cart:active { transform: scale(0.96); }
         .btn-add-to-cart:hover:not(:disabled) { background: #2563eb; color: white; }
@@ -409,35 +424,30 @@
         .sort-select {
             border: 1px solid #e2e8f0;
             border-radius: 10px;
-            padding: 6px 14px;
-            font-size: 0.78rem;
+            padding: 5px 12px;
+            font-size: 0.7rem;
             background: white;
             outline: none;
             transition: all 0.3s ease;
             color: #0f172a;
             font-weight: 500;
-            min-height: 36px;
+            min-height: 32px;
         }
         .sort-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.06); }
 
         /* ===== PRODUCT GRID ===== */
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
-            gap: 14px;
+            grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+            gap: 12px;
         }
         .product-grid .product-card { animation: cardPop 0.4s ease-out forwards; }
-
-        .no-products { text-align: center; padding: 40px 20px; background: white; border-radius: 16px; border: 1px solid #eef2f6; }
-        .no-products i { font-size: 2.5rem; color: #cbd5e1; margin-bottom: 12px; }
-        .no-products h3 { font-weight: 600; color: #0f172a; font-size: 1.1rem; margin-bottom: 4px; }
-        .no-products p { color: #94a3b8; font-size: 0.85rem; }
 
         /* ===== BUNDLE CARDS ===== */
         .bundle-card {
             background: white;
             border-radius: 14px;
-            padding: 16px;
+            padding: 14px;
             border: 1px solid #eef2f6;
             transition: all 0.3s;
             text-align: center;
@@ -445,68 +455,47 @@
         }
         .bundle-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.04); border-color: #f59e0b; }
         .bundle-card.popular { border-color: #f59e0b; background: #fffbeb; }
-        .bundle-card .bundle-image { height: 100px; object-fit: contain; margin-bottom: 8px; }
-        .bundle-card .bundle-name { font-weight: 700; font-size: 0.9rem; }
-        .bundle-card .bundle-price { font-weight: 700; font-size: 1.1rem; color: #0f172a; }
-        .bundle-card .bundle-savings { color: #10b981; font-weight: 600; font-size: 0.75rem; }
+        .bundle-card .bundle-image { height: 90px; object-fit: contain; margin-bottom: 8px; }
+        .bundle-card .bundle-name { font-weight: 700; font-size: 0.85rem; }
+        .bundle-card .bundle-price { font-weight: 700; font-size: 1rem; color: #0f172a; }
+        .bundle-card .bundle-savings { color: #10b981; font-weight: 600; font-size: 0.7rem; }
 
         /* ===== TESTIMONIALS ===== */
         .testimonial-card {
             background: white;
             border-radius: 16px;
-            padding: 24px;
+            padding: 20px;
             border: 1px solid #eef2f6;
             transition: all 0.3s;
             text-align: center;
             height: 100%;
         }
-        .testimonial-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.04);
-            border-color: #2563eb;
-        }
+        .testimonial-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.04); border-color: #2563eb; }
         .testimonial-card .avatar {
-            width: 64px;
-            height: 64px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
-            margin: 0 auto 12px;
+            margin: 0 auto 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: white;
         }
-        .testimonial-card .stars {
-            color: #f59e0b;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-        }
-        .testimonial-card .quote {
-            color: #475569;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            font-style: italic;
-        }
-        .testimonial-card .name {
-            font-weight: 700;
-            color: #0f172a;
-            margin-top: 12px;
-        }
-        .testimonial-card .title {
-            font-size: 0.75rem;
-            color: #94a3b8;
-        }
+        .testimonial-card .stars { color: #f59e0b; font-size: 0.8rem; margin-bottom: 6px; }
+        .testimonial-card .quote { color: #475569; font-size: 0.85rem; line-height: 1.5; font-style: italic; }
+        .testimonial-card .name { font-weight: 700; color: #0f172a; margin-top: 10px; font-size: 0.9rem; }
+        .testimonial-card .title { font-size: 0.7rem; color: #94a3b8; }
 
         /* ===== MAP ===== */
         .map-container {
             border-radius: 16px;
             overflow: hidden;
             border: 1px solid #eef2f6;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
         }
         .map-container iframe {
             width: 100%;
-            height: 350px;
+            height: 300px;
             border: none;
             display: block;
         }
@@ -519,17 +508,15 @@
             transform: translateX(-50%);
             background: #1e293b;
             color: white;
-            padding: 14px 28px;
+            padding: 12px 24px;
             border-radius: 14px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
             z-index: 9999;
             animation: slideUp 0.4s ease-out;
             max-width: 90%;
-            width: auto;
-            min-width: 200px;
             text-align: center;
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             pointer-events: none;
         }
         .toast.success { background: #065f46; }
@@ -540,88 +527,93 @@
         .app-footer {
             background: #0f172a;
             color: #94a3b8;
-            padding: 40px 0 20px;
+            padding: 30px 0 20px;
             margin-top: 30px;
         }
         .app-footer a { color: #94a3b8; text-decoration: none; transition: color 0.2s; }
         .app-footer a:hover { color: white; }
-        .app-footer .footer-heading { color: white; font-weight: 600; font-size: 0.8rem; margin-bottom: 0.8rem; }
+        .app-footer .footer-heading { color: white; font-weight: 600; font-size: 0.75rem; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
 
         /* ===== RESPONSIVE ===== */
-        .container-full { max-width: 100%; padding-left: 16px; padding-right: 16px; }
-        @media (min-width: 1280px) { .container-full { padding-left: 32px; padding-right: 32px; } }
-
         @media (max-width: 768px) {
-            .hero-section { min-height: 350px; padding: 30px 16px; }
+            .hero-section { min-height: 320px; padding: 20px 16px; }
             .hero-title { font-size: 2rem; }
-            .hero-subtitle { font-size: 0.9rem; }
-            .hero-features { gap: 12px; }
-            .hero-features span { font-size: 0.75rem; }
-            .product-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 10px; }
-            .product-card .product-image { height: 140px; }
-            .product-card .product-name { font-size: 0.8rem; }
-            .product-card .product-price { font-size: 0.95rem; }
-            .product-card { padding: 10px; }
-            .btn-add-to-cart { font-size: 0.7rem; padding: 7px; }
-            .category-pill { font-size: 0.7rem; padding: 5px 12px; }
-            .search-container { padding: 8px 12px; }
-            .search-input { font-size: 0.85rem; padding: 8px 12px 8px 36px; }
-            .search-icon { left: 12px; font-size: 0.85rem; }
-            .toast { font-size: 0.8rem; padding: 12px 20px; min-width: 160px; bottom: 20px; }
-            .container-full { padding-left: 12px; padding-right: 12px; }
-            .hero-btn-primary, .hero-btn-secondary { padding: 10px 24px; font-size: 0.85rem; }
-            .product-description { font-size: 0.7rem; }
-            .product-specs .spec-tag { font-size: 0.55rem; padding: 1px 8px; }
-            .nav-links { display: none !important; }
-            .map-container iframe { height: 250px; }
+            .hero-subtitle { font-size: 0.85rem; }
+            .hero-features { gap: 10px; }
+            .hero-features span { font-size: 0.7rem; }
+            .product-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+            .product-card .product-image { height: 130px; }
+            .product-card .product-name { font-size: 0.75rem; }
+            .product-card .product-price { font-size: 0.85rem; }
+            .product-card { padding: 8px; }
+            .btn-add-to-cart { font-size: 0.65rem; padding: 6px; min-height: 34px; }
+            .category-pill { font-size: 0.65rem; padding: 4px 10px; min-height: 28px; }
+            .search-container { padding: 6px 10px; }
+            .search-input { font-size: 0.8rem; padding: 6px 10px 6px 32px; }
+            .search-icon { left: 10px; font-size: 0.75rem; }
+            .toast { font-size: 0.75rem; padding: 10px 16px; bottom: 15px; }
+            .map-container iframe { height: 200px; }
+            .testimonial-card { padding: 16px; }
+            .testimonial-card .avatar { width: 48px; height: 48px; font-size: 1.1rem; }
+            .testimonial-card .quote { font-size: 0.8rem; }
+            .app-footer { padding: 20px 0 15px; }
+            /* Footer mobile fix */
+            .app-footer .grid { gap: 16px; }
+            .app-footer .col-span-2 { margin-bottom: 0; }
         }
 
         @media (max-width: 480px) {
-            .hero-section { min-height: 300px; padding: 20px 12px; }
+            .hero-section { min-height: 280px; padding: 16px 12px; }
             .hero-title { font-size: 1.5rem; }
-            .hero-subtitle { font-size: 0.8rem; }
-            .hero-features { gap: 8px; flex-wrap: wrap; }
-            .hero-features span { font-size: 0.7rem; }
+            .hero-subtitle { font-size: 0.75rem; }
+            .hero-features { gap: 6px; flex-wrap: wrap; }
+            .hero-features span { font-size: 0.65rem; }
+            .hero-btn-primary, .hero-btn-secondary { padding: 8px 16px; font-size: 0.75rem; }
             .product-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-            .product-card .product-image { height: 110px; padding: 6px; }
+            .product-card .product-image { height: 100px; padding: 6px; }
             .product-card .product-name { font-size: 0.7rem; }
-            .product-card .product-price { font-size: 0.85rem; }
-            .product-card { padding: 8px; border-radius: 10px; }
-            .product-card .badge { font-size: 0.45rem; padding: 1px 8px; top: 6px; left: 6px; }
-            .btn-add-to-cart { font-size: 0.65rem; padding: 6px; min-height: 36px; }
-            .category-pill { font-size: 0.6rem; padding: 4px 10px; min-height: 30px; }
-            .category-pill .count { font-size: 0.5rem; padding: 0px 4px; }
-            .search-input { font-size: 0.8rem; padding: 6px 10px 6px 32px; }
-            .search-container { padding: 6px 10px; border-radius: 10px; }
-            .search-icon { left: 10px; font-size: 0.75rem; }
-            .search-clear { font-size: 0.7rem; right: 8px; }
-            .sort-select { font-size: 0.65rem; padding: 4px 10px; min-height: 30px; }
-            .product-rating { font-size: 0.55rem; }
-            .hero-badge { font-size: 0.65rem; padding: 3px 12px; }
-            .bundle-card { padding: 12px; }
-            .bundle-card .bundle-image { height: 70px; }
-            .toast { font-size: 0.75rem; padding: 10px 16px; min-width: 140px; bottom: 15px; }
-            .container-full { padding-left: 8px; padding-right: 8px; }
-            .hero-btn-primary, .hero-btn-secondary { padding: 8px 18px; font-size: 0.75rem; }
+            .product-card .product-price { font-size: 0.8rem; }
+            .product-card { padding: 6px; border-radius: 10px; }
+            .product-card .badge { font-size: 0.4rem; padding: 1px 6px; top: 4px; left: 4px; }
+            .btn-add-to-cart { font-size: 0.6rem; padding: 5px; min-height: 30px; }
+            .category-pill { font-size: 0.55rem; padding: 3px 8px; min-height: 24px; }
+            .category-pill .count { font-size: 0.45rem; padding: 0px 3px; }
+            .search-input { font-size: 0.75rem; padding: 5px 8px 5px 28px; }
+            .search-container { padding: 4px 8px; border-radius: 10px; }
+            .search-icon { left: 8px; font-size: 0.7rem; }
+            .search-clear { font-size: 0.65rem; right: 6px; }
+            .sort-select { font-size: 0.6rem; padding: 3px 8px; min-height: 24px; }
+            .product-rating { font-size: 0.5rem; }
+            .hero-badge { font-size: 0.55rem; padding: 2px 10px; }
+            .bundle-card { padding: 10px; }
+            .bundle-card .bundle-image { height: 60px; }
+            .bundle-card .bundle-name { font-size: 0.75rem; }
+            .bundle-card .bundle-price { font-size: 0.85rem; }
+            .toast { font-size: 0.7rem; padding: 8px 14px; min-width: 120px; bottom: 12px; }
             .product-description { display: none; }
             .product-specs { display: none; }
-            .testimonial-card { padding: 16px; }
-            .testimonial-card .avatar { width: 48px; height: 48px; font-size: 1.2rem; }
-            .map-container iframe { height: 200px; }
+            .map-container iframe { height: 160px; }
+            .testimonial-card { padding: 12px; }
+            .testimonial-card .avatar { width: 40px; height: 40px; font-size: 1rem; }
+            .testimonial-card .quote { font-size: 0.75rem; }
+            .testimonial-card .name { font-size: 0.8rem; }
+            .app-footer .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .app-footer .col-span-2 { grid-column: span 2; }
         }
 
         @media (max-width: 380px) {
             .product-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
-            .product-card .product-image { height: 90px; }
+            .product-card .product-image { height: 80px; }
             .product-card .product-name { font-size: 0.6rem; }
-            .product-card .product-price { font-size: 0.75rem; }
+            .product-card .product-price { font-size: 0.7rem; }
             .product-card .badge { display: none; }
             .category-pill i { display: none; }
-            .category-pill { font-size: 0.5rem; padding: 3px 8px; min-height: 26px; }
+            .category-pill { font-size: 0.5rem; padding: 2px 6px; min-height: 20px; }
             .hero-title { font-size: 1.2rem; }
+            .app-footer .grid { grid-template-columns: 1fr; gap: 10px; }
+            .app-footer .col-span-2 { grid-column: span 1; }
         }
 
-        /* ===== SR ONLY ===== */
         .sr-only {
             position: absolute;
             width: 1px;
@@ -645,8 +637,8 @@
                 <span class="brand-text">Price<span>Point</span></span>
             </a>
             
-            <!-- Navigation Links -->
-            <nav class="nav-links hidden md:flex items-center gap-1" aria-label="Main navigation">
+            <!-- Navigation Links - Desktop -->
+            <nav class="hidden md:flex items-center gap-1" aria-label="Main navigation">
                 <a href="/" class="nav-link active"><i class="fas fa-home"></i> Home</a>
                 <a href="#shop" class="nav-link"><i class="fas fa-mobile-alt"></i> Products</a>
                 <a href="#bundles" class="nav-link"><i class="fas fa-tag"></i> Bundles</a>
@@ -660,24 +652,24 @@
                     <i class="fas fa-shopping-bag text-lg"></i>
                     <span class="cart-count" id="cartCount" aria-label="Cart items">0</span>
                 </a>
-                <a href="#shop" class="bg-[#1e293b] text-white px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-[#0f172a] transition" aria-label="Go to shop">
+                <a href="#shop" class="bg-[#1e293b] text-white px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-[#0f172a] transition">
                     <i class="fas fa-plus"></i> Shop
                 </a>
-                <!-- Mobile Menu Toggle -->
-                <button class="md:hidden text-gray-700 hover:text-blue-600 transition" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+                <button class="md:hidden text-gray-700 hover:text-blue-600 transition p-1" onclick="toggleMobileMenu()" aria-label="Toggle menu" id="menuToggle">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
             </div>
         </div>
-        <!-- Mobile Menu -->
-        <div id="mobileMenu" class="md:hidden bg-white border-b border-gray-100 hidden">
-            <div class="container-full mx-auto py-3 flex flex-col gap-2">
-                <a href="/" class="nav-link active"><i class="fas fa-home"></i> Home</a>
-                <a href="#shop" class="nav-link"><i class="fas fa-mobile-alt"></i> Products</a>
-                <a href="#bundles" class="nav-link"><i class="fas fa-tag"></i> Bundles</a>
-                <a href="#testimonials" class="nav-link"><i class="fas fa-star"></i> Reviews</a>
-                <a href="#location" class="nav-link"><i class="fas fa-map-marker-alt"></i> Location</a>
-                <a href="#about" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+        
+        <!-- ===== MOBILE MENU - FIXED ===== -->
+        <div id="mobileMenu">
+            <div class="container-full mx-auto">
+                <a href="/" class="mobile-nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="#shop" class="mobile-nav-link" onclick="closeMobileMenu()"><i class="fas fa-mobile-alt"></i> Products</a>
+                <a href="#bundles" class="mobile-nav-link" onclick="closeMobileMenu()"><i class="fas fa-tag"></i> Bundles</a>
+                <a href="#testimonials" class="mobile-nav-link" onclick="closeMobileMenu()"><i class="fas fa-star"></i> Reviews</a>
+                <a href="#location" class="mobile-nav-link" onclick="closeMobileMenu()"><i class="fas fa-map-marker-alt"></i> Location</a>
+                <a href="#about" class="mobile-nav-link" onclick="closeMobileMenu()"><i class="fas fa-info-circle"></i> About</a>
             </div>
         </div>
     </header>
@@ -699,10 +691,10 @@
                     Shop genuine phones, laptops, audio, and accessories with fast delivery across Kenya.
                 </p>
                 <div class="flex flex-wrap justify-center gap-3 animate-slide-up" style="animation-delay:0.2s;">
-                    <a href="#shop" class="hero-btn-primary" aria-label="Shop now">
+                    <a href="#shop" class="hero-btn-primary">
                         <i class="fas fa-bolt"></i> Shop Now
                     </a>
-                    <a href="#bundles" class="hero-btn-secondary" aria-label="View deals">
+                    <a href="#bundles" class="hero-btn-secondary">
                         <i class="fas fa-tag"></i> View Deals
                     </a>
                 </div>
@@ -715,17 +707,16 @@
         </section>
 
         <!-- ===== SEARCH & FILTERS ===== -->
-        <section class="py-3 bg-white border-b border-gray-100 sticky top-14 z-40" id="categorySection" aria-label="Search and filters">
+        <section class="py-2 bg-white border-b border-gray-100 sticky top-14 z-40" id="categorySection" aria-label="Search and filters">
             <div class="container-full mx-auto">
-                <!-- Search Bar -->
-                <div class="search-container mb-2">
+                <div class="search-container mb-1">
                     <div class="relative">
                         <i class="fas fa-search search-icon" aria-hidden="true"></i>
                         <label for="searchInput" class="sr-only">Search for products</label>
                         <input 
                             type="text" 
                             id="searchInput" 
-                            placeholder="Search products by name, brand, or category..." 
+                            placeholder="Search products..." 
                             class="search-input"
                             oninput="filterProducts()"
                             autocomplete="off"
@@ -736,7 +727,6 @@
                     </div>
                 </div>
 
-                <!-- Category Pills + Sort -->
                 <div class="flex items-center justify-between gap-2">
                     <div class="category-scroll flex-1" id="categoryList" role="tablist">
                         <span class="category-pill active" data-category="all" onclick="filterByCategory('all', this)" role="tab" aria-selected="true">
@@ -761,17 +751,16 @@
                     </div>
                 </div>
                 
-                <!-- Result Count -->
-                <div class="mt-1.5 text-xs text-gray-400" aria-live="polite">
+                <div class="mt-1 text-xs text-gray-400" aria-live="polite">
                     Showing <span id="visibleCount">{{ all_products|length }}</span> of <span id="totalCount">{{ all_products|length }}</span> products
                 </div>
             </div>
         </section>
 
         <!-- ===== PRODUCTS ===== -->
-        <section id="shop" class="py-4 bg-[#f8fafc]" aria-label="Products">
+        <section id="shop" class="py-3 bg-[#f8fafc]" aria-label="Products">
             <div class="container-full mx-auto">
-                <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center justify-between mb-3">
                     <div>
                         <h2 class="text-lg md:text-2xl font-extrabold text-[#0f172a]" id="categoryTitle">🔥 All Products</h2>
                         <p class="text-xs text-gray-400" id="categorySubtitle">Browse our complete collection</p>
@@ -792,19 +781,19 @@
                         {% if product.description %}
                         <div class="product-description">
                             <i class="fas fa-align-left text-blue-500 mr-1 text-xs" aria-hidden="true"></i>
-                            {{ product.description }}
+                            {{ product.description[:60] }}{% if product.description|length > 60 %}...{% endif %}
                         </div>
                         {% endif %}
                         
                         {% if product.specs and product.specs|length > 0 %}
                         <div class="product-specs">
-                            {% for spec in product.specs[:3] %}
+                            {% for spec in product.specs[:2] %}
                             <span class="spec-tag">
-                                <i class="fas fa-check-circle" aria-hidden="true"></i> {{ spec }}
+                                <i class="fas fa-check-circle" aria-hidden="true"></i> {{ spec|truncate(12, true) }}
                             </span>
                             {% endfor %}
-                            {% if product.specs|length > 3 %}
-                            <span class="spec-more">+{{ product.specs|length - 3 }} more</span>
+                            {% if product.specs|length > 2 %}
+                            <span class="spec-more">+{{ product.specs|length - 2 }}</span>
                             {% endif %}
                         </div>
                         {% endif %}
@@ -818,14 +807,14 @@
                                     <i class="far fa-star" aria-hidden="true"></i>
                                 {% endif %}
                             {% endfor %}
-                            <span class="text-gray-400 text-[0.5rem]">({{ product.reviews or 0 }})</span>
+                            <span class="text-gray-400 text-[0.45rem]">({{ product.reviews or 0 }})</span>
                         </div>
                         <div class="product-price">KSh {{ "%.0f"|format(product.price) }}</div>
-                        <button onclick="addToCart('{{ id }}')" class="btn-add-to-cart" {% if product.stock is defined and product.stock <= 0 %}disabled{% endif %} aria-label="Add {{ product.name }} to cart">
+                        <button onclick="addToCart('{{ id }}')" class="btn-add-to-cart" {% if product.stock is defined and product.stock <= 0 %}disabled{% endif %}>
                             {% if product.stock is defined and product.stock <= 0 %}
-                                <i class="fas fa-times-circle" aria-hidden="true"></i> Out of Stock
+                                <i class="fas fa-times-circle" aria-hidden="true"></i> Out
                             {% else %}
-                                <i class="fas fa-plus" aria-hidden="true"></i> Add to Cart
+                                <i class="fas fa-plus" aria-hidden="true"></i> Add
                             {% endif %}
                         </button>
                     </div>
@@ -835,7 +824,7 @@
                     <i class="fas fa-box-open" aria-hidden="true"></i>
                     <h3>No products found</h3>
                     <p>Try adjusting your search or filter</p>
-                    <button onclick="resetFilters()" class="mt-3 px-5 py-2 bg-[#1e293b] text-white rounded-full text-sm font-semibold hover:bg-[#0f172a] transition" aria-label="Reset filters">
+                    <button onclick="resetFilters()" class="mt-2 px-4 py-1.5 bg-[#1e293b] text-white rounded-full text-sm font-semibold hover:bg-[#0f172a] transition">
                         <i class="fas fa-undo" aria-hidden="true"></i> Reset
                     </button>
                 </div>
@@ -843,9 +832,9 @@
         </section>
 
         <!-- ===== BUNDLES ===== -->
-        <section id="bundles" class="py-6 bg-white" aria-label="Product bundles">
+        <section id="bundles" class="py-4 bg-white" aria-label="Product bundles">
             <div class="container-full mx-auto">
-                <div class="text-center mb-5">
+                <div class="text-center mb-4">
                     <h2 class="text-lg md:text-2xl font-extrabold text-[#0f172a]">Complete Your Setup</h2>
                     <p class="text-xs text-gray-400">Curated bundles for the best value</p>
                 </div>
@@ -853,14 +842,14 @@
                     {% for id, bundle in bundles.items() %}
                     <div class="bundle-card {% if bundle.popular %}popular{% endif %}">
                         {% if bundle.popular %}
-                        <span class="text-[0.55rem] font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full inline-block mb-1">⭐ Best Value</span>
+                        <span class="text-[0.5rem] font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full inline-block mb-1">⭐ Best Value</span>
                         {% endif %}
                         <img src="{{ bundle.image }}" alt="{{ bundle.name }} bundle" class="bundle-image w-full object-contain" loading="lazy" onerror="this.style.display='none'">
                         <div class="bundle-name">{{ bundle.name }}</div>
-                        <div class="text-gray-500 text-[0.6rem]">{{ bundle.products|length }} Products</div>
+                        <div class="text-gray-500 text-[0.55rem]">{{ bundle.products|length }} Products</div>
                         <div class="bundle-price">KSh {{ "%.0f"|format(bundle.price) }}</div>
                         <div class="bundle-savings">Save KSh {{ "%.0f"|format(bundle.savings) }}</div>
-                        <button onclick="addToCart('{{ id }}')" class="mt-3 w-full py-1.5 rounded-full bg-[#1e293b] text-white text-sm font-semibold hover:bg-[#0f172a] transition" aria-label="Add {{ bundle.name }} to cart">
+                        <button onclick="addToCart('{{ id }}')" class="mt-2 w-full py-1.5 rounded-full bg-[#1e293b] text-white text-sm font-semibold hover:bg-[#0f172a] transition">
                             <i class="fas fa-plus" aria-hidden="true"></i> Add Bundle
                         </button>
                     </div>
@@ -870,60 +859,37 @@
         </section>
 
         <!-- ===== TESTIMONIALS ===== -->
-        <section id="testimonials" class="py-8 bg-[#f8fafc]" aria-label="Customer testimonials">
+        <section id="testimonials" class="py-5 bg-[#f8fafc]" aria-label="Customer testimonials">
             <div class="container-full mx-auto">
-                <div class="text-center mb-6">
+                <div class="text-center mb-4">
                     <h2 class="text-lg md:text-2xl font-extrabold text-[#0f172a]">What Our Customers Say</h2>
                     <p class="text-xs text-gray-400">Real reviews from real customers</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Testimonial 1 -->
                     <div class="testimonial-card animate-slide-up">
                         <div class="avatar" style="background: linear-gradient(135deg, #2563eb, #7c3aed);">
                             <i class="fas fa-user"></i>
                         </div>
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <p class="quote">"Price Point delivered my MacBook Air M3 within 4 hours! Genuine product, great price, and excellent customer service. Highly recommend!"</p>
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <p class="quote">"Price Point delivered my MacBook Air M3 within 4 hours! Genuine product, great price, and excellent customer service."</p>
                         <div class="name">John Mwangi</div>
                         <div class="title">Nairobi, Kenya</div>
                     </div>
-
-                    <!-- Testimonial 2 -->
                     <div class="testimonial-card animate-slide-up" style="animation-delay: 0.1s;">
                         <div class="avatar" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">
                             <i class="fas fa-user"></i>
                         </div>
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <p class="quote">"I bought the iPhone 15 Pro Max and it was delivered the next day. The pricing is competitive and the phone is 100% genuine. Trustworthy store!"</p>
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <p class="quote">"I bought the iPhone 15 Pro Max and it was delivered the next day. Competitive pricing and 100% genuine. Trustworthy store!"</p>
                         <div class="name">Sarah Akinyi</div>
                         <div class="title">Mombasa, Kenya</div>
                     </div>
-
-                    <!-- Testimonial 3 -->
                     <div class="testimonial-card animate-slide-up" style="animation-delay: 0.2s;">
                         <div class="avatar" style="background: linear-gradient(135deg, #10b981, #059669);">
                             <i class="fas fa-user"></i>
                         </div>
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <p class="quote">"Excellent service! I ordered the Anker Power Bank and received it within 24 hours. The quality is top-notch. Will definitely shop here again."</p>
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+                        <p class="quote">"Excellent service! I ordered the Anker Power Bank and received it within 24 hours. Top-notch quality. Will shop here again."</p>
                         <div class="name">David Ochieng</div>
                         <div class="title">Kisumu, Kenya</div>
                     </div>
@@ -932,16 +898,15 @@
         </section>
 
         <!-- ===== LOCATION MAP ===== -->
-        <section id="location" class="py-8 bg-white" aria-label="Store location">
+        <section id="location" class="py-5 bg-white" aria-label="Store location">
             <div class="container-full mx-auto">
-                <div class="text-center mb-6">
+                <div class="text-center mb-4">
                     <h2 class="text-lg md:text-2xl font-extrabold text-[#0f172a]">📍 Find Us</h2>
                     <p class="text-xs text-gray-400">Visit our store or contact us for delivery</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="md:col-span-2">
                         <div class="map-container">
-                            <!-- Google Maps Embed - Nairobi CBD Location -->
                             <iframe 
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d255282.35853742383!2d36.68219671385957!3d-1.3028611!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2s!4v1700000000000" 
                                 allowfullscreen="" 
@@ -951,18 +916,18 @@
                             ></iframe>
                         </div>
                     </div>
-                    <div class="flex flex-col justify-center gap-4">
-                        <div class="bg-[#f8fafc] p-4 rounded-xl border border-gray-100">
+                    <div class="flex flex-col justify-center gap-3">
+                        <div class="bg-[#f8fafc] p-3 rounded-xl border border-gray-100">
                             <h3 class="font-bold text-[#0f172a] text-sm">📍 Address</h3>
-                            <p class="text-sm text-gray-600 mt-1">Nairobi CBD,<br />Kenya</p>
+                            <p class="text-sm text-gray-600 mt-0.5">Nairobi CBD, Kenya</p>
                         </div>
-                        <div class="bg-[#f8fafc] p-4 rounded-xl border border-gray-100">
+                        <div class="bg-[#f8fafc] p-3 rounded-xl border border-gray-100">
                             <h3 class="font-bold text-[#0f172a] text-sm">📞 Contact</h3>
-                            <p class="text-sm text-gray-600 mt-1">+254 700 123 456<br />info@apexbuilt.site</p>
+                            <p class="text-sm text-gray-600 mt-0.5">+254 700 123 456<br />info@apexbuilt.site</p>
                         </div>
-                        <div class="bg-[#f8fafc] p-4 rounded-xl border border-gray-100">
+                        <div class="bg-[#f8fafc] p-3 rounded-xl border border-gray-100">
                             <h3 class="font-bold text-[#0f172a] text-sm">🕐 Hours</h3>
-                            <p class="text-sm text-gray-600 mt-1">Mon-Fri: 8AM - 6PM<br />Sat: 9AM - 4PM</p>
+                            <p class="text-sm text-gray-600 mt-0.5">Mon-Fri: 8AM - 6PM<br />Sat: 9AM - 4PM</p>
                         </div>
                     </div>
                 </div>
@@ -970,30 +935,30 @@
         </section>
 
         <!-- ===== WHY US ===== -->
-        <section id="about" class="py-6 bg-[#f8fafc]" aria-label="Why choose us">
+        <section id="about" class="py-4 bg-[#f8fafc]" aria-label="Why choose us">
             <div class="container-full mx-auto">
-                <div class="text-center mb-5">
+                <div class="text-center mb-4">
                     <h2 class="text-base md:text-2xl font-extrabold text-[#0f172a]">Why Price Point?</h2>
                     <p class="text-xs text-gray-400">Kenya's trusted electronics store</p>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div class="text-center">
-                        <div class="w-12 h-12 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-xl text-blue-600 mb-2" aria-hidden="true">📦</div>
+                        <div class="w-10 h-10 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-lg text-blue-600 mb-1" aria-hidden="true">📦</div>
                         <h3 class="font-semibold text-sm">Same-Day Nairobi</h3>
                         <p class="text-xs text-gray-500">Fast delivery</p>
                     </div>
                     <div class="text-center">
-                        <div class="w-12 h-12 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-xl text-blue-600 mb-2" aria-hidden="true">🚚</div>
+                        <div class="w-10 h-10 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-lg text-blue-600 mb-1" aria-hidden="true">🚚</div>
                         <h3 class="font-semibold text-sm">Next-Day Countrywide</h3>
                         <p class="text-xs text-gray-500">Reliable delivery</p>
                     </div>
                     <div class="text-center">
-                        <div class="w-12 h-12 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-xl text-blue-600 mb-2" aria-hidden="true">✅</div>
+                        <div class="w-10 h-10 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-lg text-blue-600 mb-1" aria-hidden="true">✅</div>
                         <h3 class="font-semibold text-sm">Genuine Products</h3>
                         <p class="text-xs text-gray-500">100% authentic</p>
                     </div>
                     <div class="text-center">
-                        <div class="w-12 h-12 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-xl text-blue-600 mb-2" aria-hidden="true">🛡️</div>
+                        <div class="w-10 h-10 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-lg text-blue-600 mb-1" aria-hidden="true">🛡️</div>
                         <h3 class="font-semibold text-sm">Official Warranty</h3>
                         <p class="text-xs text-gray-500">Peace of mind</p>
                     </div>
@@ -1003,53 +968,59 @@
 
     </main>
 
-    <!-- ===== FOOTER ===== -->
+    <!-- ===== FOOTER - MOBILE OPTIMIZED ===== -->
     <footer class="app-footer" role="contentinfo">
-        <div class="container-full mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div class="col-span-2 md:col-span-1">
-                <h3 class="text-white text-xl font-bold flex items-center gap-2">
-                    <i class="fas fa-bolt text-blue-500" aria-hidden="true"></i> Price<span class="text-blue-500">Point</span>
-                </h3>
-                <p class="mt-1 text-xs">Premium electronics for every need in Kenya.</p>
-                <div class="flex gap-3 mt-3">
-                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook text-gray-400 hover:text-white transition text-lg"></i></a>
-                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter text-gray-400 hover:text-white transition text-lg"></i></a>
-                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram text-gray-400 hover:text-white transition text-lg"></i></a>
-                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube text-gray-400 hover:text-white transition text-lg"></i></a>
+        <div class="container-full mx-auto">
+            <!-- Grid: 2 columns on mobile, 4 on desktop -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                <!-- Brand - spans full width on mobile -->
+                <div class="col-span-2 md:col-span-1">
+                    <h3 class="text-white text-lg md:text-xl font-bold flex items-center gap-2">
+                        <i class="fas fa-bolt text-blue-500" aria-hidden="true"></i> Price<span class="text-blue-500">Point</span>
+                    </h3>
+                    <p class="mt-1 text-xs text-gray-400">Premium electronics for every need in Kenya.</p>
+                    <div class="flex gap-2 mt-2">
+                        <a href="#" aria-label="Facebook" class="text-gray-400 hover:text-white transition text-base"><i class="fab fa-facebook"></i></a>
+                        <a href="#" aria-label="Twitter" class="text-gray-400 hover:text-white transition text-base"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Instagram" class="text-gray-400 hover:text-white transition text-base"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="YouTube" class="text-gray-400 hover:text-white transition text-base"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-heading">Shop</h4>
+                    <ul class="space-y-0.5 text-xs">
+                        <li><a href="#">All Products</a></li>
+                        <li><a href="#">Bundles</a></li>
+                        <li><a href="#">Best Sellers</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-heading">Support</h4>
+                    <ul class="space-y-0.5 text-xs">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Returns</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-span-2 md:col-span-1">
+                    <h4 class="footer-heading">Stay Updated</h4>
+                    <p class="text-xs text-gray-400 mb-1">Get deals & new arrivals</p>
+                    <form class="flex gap-1">
+                        <label for="emailInput" class="sr-only">Email address</label>
+                        <input id="emailInput" type="email" placeholder="Email" class="flex-1 px-2 py-1.5 rounded-lg bg-white/10 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-xs" />
+                        <button type="submit" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg font-semibold text-xs hover:bg-blue-700 transition">Subscribe</button>
+                    </form>
                 </div>
             </div>
-            <div>
-                <h4 class="footer-heading">Shop</h4>
-                <ul class="space-y-1 text-xs">
-                    <li><a href="#">All Products</a></li>
-                    <li><a href="#">Bundles</a></li>
-                    <li><a href="#">Best Sellers</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="footer-heading">Support</h4>
-                <ul class="space-y-1 text-xs">
-                    <li><a href="#">Help Center</a></li>
-                    <li><a href="#">Returns</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="footer-heading">Stay Updated</h4>
-                <p class="text-xs text-gray-400 mb-1">Get deals & new arrivals</p>
-                <form class="flex gap-1">
-                    <label for="emailInput" class="sr-only">Email address</label>
-                    <input id="emailInput" type="email" placeholder="Email" class="flex-1 px-2 py-1.5 rounded-lg bg-white/10 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-xs" />
-                    <button type="submit" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg font-semibold text-xs hover:bg-blue-700 transition">Subscribe</button>
-                </form>
-            </div>
-        </div>
-        <div class="container-full mx-auto mt-6 pt-4 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
-            <p>© 2026 <span class="text-white font-medium">Price Point Kenya</span>. All rights reserved.</p>
-            <div class="flex gap-3 mt-1 md:mt-0">
-                <a href="#" class="hover:text-white transition">Privacy</a>
-                <a href="#" class="hover:text-white transition">Terms</a>
-                <a href="#" class="hover:text-white transition">Cookies</a>
+            
+            <!-- Bottom bar -->
+            <div class="mt-4 pt-3 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 gap-2">
+                <p>© 2026 <span class="text-white font-medium">Price Point Kenya</span></p>
+                <div class="flex gap-3">
+                    <a href="#" class="hover:text-white transition">Privacy</a>
+                    <a href="#" class="hover:text-white transition">Terms</a>
+                    <a href="#" class="hover:text-white transition">Cookies</a>
+                </div>
             </div>
         </div>
     </footer>
@@ -1062,12 +1033,32 @@
 
     <script>
         // ============================================================
-        // MOBILE MENU TOGGLE
+        // MOBILE MENU - FIXED
         // ============================================================
         function toggleMobileMenu() {
             const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('hidden');
+            const icon = document.querySelector('#menuToggle i');
+            menu.classList.toggle('open');
+            if (menu.classList.contains('open')) {
+                icon.className = 'fas fa-times text-xl';
+            } else {
+                icon.className = 'fas fa-bars text-xl';
+            }
         }
+
+        function closeMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const icon = document.querySelector('#menuToggle i');
+            menu.classList.remove('open');
+            icon.className = 'fas fa-bars text-xl';
+        }
+
+        // Close mobile menu on window resize to desktop
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) {
+                closeMobileMenu();
+            }
+        });
 
         // ============================================================
         // SEARCH, FILTER & SORT
@@ -1314,6 +1305,7 @@
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                closeMobileMenu();
             });
         });
 
