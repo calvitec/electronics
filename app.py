@@ -21,12 +21,14 @@ IS_VERCEL = 'VERCEL' in os.environ or 'NOW' in os.environ
 if IS_VERCEL:
     UPLOAD_FOLDER = '/tmp/static/uploads'
     STATIC_FOLDER = '/tmp/static'
+    JSON_FOLDER = '/tmp'
 else:
     UPLOAD_FOLDER = 'static/uploads'
     STATIC_FOLDER = 'static'
+    JSON_FOLDER = '.'
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB max file size
+MAX_CONTENT_LENGTH = 5 * 1024 * 1024
 
 try:
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -80,18 +82,26 @@ except Exception as e:
     print("📁 Using JSON storage")
 
 # ===== JSON FALLBACK =====
+def get_json_path(filename):
+    return os.path.join(JSON_FOLDER, filename)
+
 def load_json(file_path):
     try:
-        if os.path.exists(file_path):
-            with open(file_path, 'r') as f:
+        full_path = get_json_path(file_path)
+        if os.path.exists(full_path):
+            with open(full_path, 'r') as f:
                 return json.load(f)
+        # Create empty file
+        with open(full_path, 'w') as f:
+            json.dump([], f)
         return []
     except:
         return []
 
 def save_json(file_path, data):
     try:
-        with open(file_path, 'w') as f:
+        full_path = get_json_path(file_path)
+        with open(full_path, 'w') as f:
             json.dump(data, f, indent=2)
         return True
     except:
@@ -142,7 +152,7 @@ def load_product_by_id(product_id):
                     return data[0]
         except:
             pass
-    products = load_json('products.json')
+    products = load_products()
     for product in products:
         if str(product.get('id')) == str(product_id):
             return product
@@ -161,7 +171,7 @@ def load_products_by_category(category):
                 return response.json()
         except:
             pass
-    products = load_json('products.json')
+    products = load_products()
     return [p for p in products if p.get('category') == category]
 
 def load_bundles():
@@ -284,14 +294,6 @@ def update_product_stock(product_id, quantity):
 def load_orders():
     """
     Load all orders, merging Supabase and the local JSON backup.
-
-    Why merge: save_order_to_db() always writes a JSON backup (see below),
-    but it only ALSO writes to Supabase if the DB is connected AND the
-    insert succeeds. If a POS/web order fails to insert into Supabase
-    (e.g. schema mismatch) it used to silently exist only in JSON, while
-    this function - when DB_CONNECTED - only ever read from Supabase.
-    That's why new orders (like ones added from the POS) sometimes did
-    not show up in /admin's analytics. Merging both sources fixes it.
     """
     supabase_orders = []
     if DB_CONNECTED:
@@ -313,10 +315,6 @@ def load_orders():
     if not isinstance(json_orders, list):
         json_orders = []
 
-    # Merge, de-duplicating by order_id. Supabase copy wins if both exist,
-    # since it's the "source of truth" once a save there succeeds - but any
-    # order that ONLY exists in the JSON backup (e.g. POS order that failed
-    # to reach Supabase) still gets included so analytics stay accurate.
     merged = {}
     for order in json_orders:
         oid = order.get('order_id')
@@ -332,11 +330,7 @@ def load_orders():
     return all_orders
 
 def save_order_to_db(order_data):
-    """
-    Save order to Supabase (if connected) AND always to the local JSON
-    backup, so load_orders() can never "lose" an order that was placed
-    (e.g. a POS sale) even if the Supabase write fails.
-    """
+    """Save order to Supabase (if connected) AND always to the local JSON backup"""
     json_saved = save_order_to_json(order_data)
 
     if DB_CONNECTED:
@@ -362,24 +356,16 @@ def save_order_to_db(order_data):
         return json_saved
 
 def save_order_to_json(order_data):
-    """Save order to JSON file (used as backup on every order, not just fallback)"""
+    """Save order to JSON file (used as backup on every order)"""
     try:
-        orders = []
-        if os.path.exists('orders.json'):
-            with open('orders.json', 'r') as f:
-                try:
-                    orders = json.load(f)
-                    if not isinstance(orders, list):
-                        orders = []
-                except:
-                    orders = []
+        orders = load_json('orders.json')
+        if not isinstance(orders, list):
+            orders = []
         
-        # Avoid duplicate entries if this order_id was already saved
         orders = [o for o in orders if o.get('order_id') != order_data.get('order_id')]
         orders.insert(0, order_data)
         
-        with open('orders.json', 'w') as f:
-            json.dump(orders, f, indent=2)
+        save_json('orders.json', orders)
         
         print(f"✅ Order saved to JSON: {order_data.get('order_id')}")
         return True
@@ -536,6 +522,7 @@ def get_sales_analytics():
             'total_items_sold': total_items_sold,
             'pos_orders_count': pos_orders_count,
             'web_orders_count': web_orders_count,
+            'total_customers': len(customer_data),
             'monthly_data': monthly_data,
             'product_sales': dict(sorted_products[:10]),
             'all_product_sales': dict(sorted_products),
@@ -552,6 +539,7 @@ def get_sales_analytics():
             'total_items_sold': 0,
             'pos_orders_count': 0,
             'web_orders_count': 0,
+            'total_customers': 0,
             'monthly_data': {},
             'product_sales': {},
             'all_product_sales': {},
@@ -1088,15 +1076,52 @@ def clear_cart():
 
 @app.route('/api/status')
 def api_status():
-    return jsonify({
-        'database': DB_TYPE,
-        'connected': DB_CONNECTED,
-        'products': len(load_products()),
-        'bundles': len(load_bundles()),
-        'orders': len(load_orders()),
-        'timestamp': datetime.utcnow().isoformat(),
-        'environment': 'vercel' if IS_VERCEL else 'local'
-    })
+    """Get system status with customer count"""
+    try:
+        products = load_products()
+        bundles = load_bundles()
+        orders = load_orders()
+        
+        # Count unique customers
+        customers = set()
+        pos_orders = 0
+        web_orders = 0
+        
+        for order in orders:
+            if order.get('source') == 'pos':
+                pos_orders += 1
+            else:
+                web_orders += 1
+            
+            if order.get('customer') and order['customer'].get('name'):
+                customers.add(order['customer']['name'])
+        
+        return jsonify({
+            'database': DB_TYPE,
+            'connected': DB_CONNECTED,
+            'products': len(products) if products else 0,
+            'bundles': len(bundles) if bundles else 0,
+            'orders': len(orders) if orders else 0,
+            'customers': len(customers),
+            'pos_orders': pos_orders,
+            'web_orders': web_orders,
+            'timestamp': datetime.utcnow().isoformat(),
+            'environment': 'vercel' if IS_VERCEL else 'local'
+        })
+    except Exception as e:
+        print(f"❌ Error in api_status: {e}")
+        return jsonify({
+            'database': DB_TYPE,
+            'connected': DB_CONNECTED,
+            'products': 0,
+            'bundles': 0,
+            'orders': 0,
+            'customers': 0,
+            'pos_orders': 0,
+            'web_orders': 0,
+            'timestamp': datetime.utcnow().isoformat(),
+            'environment': 'vercel' if IS_VERCEL else 'local'
+        })
 
 @app.route('/api/products')
 def api_products():
@@ -1209,6 +1234,17 @@ def admin_dashboard():
         customers = list(customer_list.values())
         customers.sort(key=lambda x: x['orders'], reverse=True)
         
+        # Clean products
+        clean_products = []
+        for p in products:
+            p['price'] = p.get('price') or 0
+            p['cost_price'] = p.get('cost_price') or 0
+            p['stock'] = p.get('stock') or 0
+            p['name'] = p.get('name') or 'Unknown Product'
+            p['category'] = p.get('category') or 'Uncategorized'
+            clean_products.append(p)
+        products = clean_products
+        
         if products is None or not isinstance(products, list):
             products = []
         if orders is None or not isinstance(orders, list):
@@ -1227,6 +1263,7 @@ def admin_dashboard():
             'pending_orders': len([o for o in orders if o.get('status') == 'pending']),
             'pos_orders': pos_count,
             'web_orders': web_count,
+            'total_customers': len(customers),
             'total_revenue': analytics.get('total_revenue', 0),
             'total_profit': analytics.get('total_profit', 0),
             'total_items_sold': analytics.get('total_items_sold', 0)
@@ -1244,6 +1281,7 @@ def admin_dashboard():
         
     except Exception as e:
         print(f"❌ Admin dashboard error: {e}")
+        traceback.print_exc()
         flash('Error loading admin dashboard', 'danger')
         
         return render_template('admin.html',
@@ -1262,6 +1300,7 @@ def admin_dashboard():
                 'pending_orders': 0,
                 'pos_orders': 0,
                 'web_orders': 0,
+                'total_customers': 0,
                 'total_revenue': 0,
                 'total_profit': 0,
                 'total_items_sold': 0
@@ -1306,12 +1345,6 @@ def admin_pos():
 def admin_pos_place_order():
     """
     Place order from POS system.
-
-    Now: (1) validates stock like the web checkout does, (2) recomputes
-    analytics right after saving the order + updating stock, and
-    (3) returns that fresh analytics payload in the JSON response so the
-    admin panel can update its numbers immediately (no full page reload
-    needed) as soon as a POS sale is completed.
     """
     if not session.get('admin_logged_in'):
         return jsonify({'success': False, 'message': 'Unauthorized'}), 401
@@ -1371,13 +1404,10 @@ def admin_pos_place_order():
         if not save_order_to_db(order_data):
             return jsonify({'success': False, 'message': 'Failed to save order'}), 500
 
-        # Update stock for every product sold in this POS order
         for updated_product in products_to_update:
             save_product_to_db(updated_product)
             print(f"✅ Stock updated: {updated_product.get('name')} → {updated_product.get('stock')}")
 
-        # Recompute analytics now that the order + stock changes are saved,
-        # and send it straight back so the admin panel can refresh live.
         analytics = get_sales_analytics()
 
         return jsonify({
@@ -1391,7 +1421,8 @@ def admin_pos_place_order():
                 'total_orders': analytics.get('total_orders', 0),
                 'total_items_sold': analytics.get('total_items_sold', 0),
                 'pos_orders_count': analytics.get('pos_orders_count', 0),
-                'web_orders_count': analytics.get('web_orders_count', 0)
+                'web_orders_count': analytics.get('web_orders_count', 0),
+                'total_customers': analytics.get('total_customers', 0)
             }
         })
             
@@ -1402,7 +1433,7 @@ def admin_pos_place_order():
 
 @app.route('/admin/api/analytics')
 def admin_api_analytics():
-    """API endpoint for sales analytics - always recomputed fresh from load_orders()"""
+    """API endpoint for sales analytics"""
     if not session.get('admin_logged_in'):
         return jsonify({'error': 'Unauthorized'}), 401
     
@@ -1425,7 +1456,8 @@ def admin_api_revenue():
             'total_revenue': analytics.get('total_revenue', 0),
             'total_profit': analytics.get('total_profit', 0),
             'total_orders': analytics.get('total_orders', 0),
-            'total_items_sold': analytics.get('total_items_sold', 0)
+            'total_items_sold': analytics.get('total_items_sold', 0),
+            'total_customers': analytics.get('total_customers', 0)
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -1505,7 +1537,6 @@ def admin_update_order_status(order_id):
                 timeout=10
             )
             if response.status_code in [200, 204]:
-                # Keep the JSON backup in sync too
                 orders = load_json('orders.json')
                 if isinstance(orders, list):
                     for order in orders:
