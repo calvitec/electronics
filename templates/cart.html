@@ -9,13 +9,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
         * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #f8fafc; color: #0f172a; min-height: 100vh; }
+        body { background: #f8fafc; color: #0f172a; min-height: 100vh; overflow-x: hidden; }
 
         /* ===== ANIMATIONS ===== */
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
+        .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
 
         /* ===== HEADER ===== */
         .app-header {
@@ -28,9 +30,7 @@
             z-index: 1000;
             transition: all 0.3s ease;
         }
-        .app-header.scrolled {
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-        }
+        .app-header.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
 
         .brand-text {
             font-weight: 800;
@@ -316,19 +316,32 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.08);
         }
 
+        /* ===== FOOTER ===== */
+        .app-footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 40px 0 20px;
+            margin-top: 40px;
+        }
+        .app-footer a { color: #94a3b8; text-decoration: none; transition: color 0.2s; }
+        .app-footer a:hover { color: white; }
+        .app-footer .footer-heading { color: white; font-weight: 600; font-size: 0.85rem; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+
         /* ===== TOAST ===== */
         .toast {
             position: fixed;
             bottom: 30px;
-            right: 30px;
-            z-index: 9999;
+            left: 50%;
+            transform: translateX(-50%);
             background: white;
             padding: 16px 24px;
             border-radius: 16px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.1);
             border: 1px solid #eef2f6;
+            z-index: 9999;
             animation: slideUp 0.4s ease-out;
             max-width: 400px;
+            min-width: 280px;
         }
         .toast.hidden { display: none; }
 
@@ -344,6 +357,7 @@
             .empty-cart { padding: 40px 20px; }
             .product-specs .spec-tag { font-size: 0.6rem; padding: 1px 8px; }
             .product-description { font-size: 0.75rem; }
+            .app-footer .grid { gap: 20px; }
         }
         @media (max-width: 480px) {
             .cart-item { padding: 12px; }
@@ -354,9 +368,9 @@
             .btn-checkout { font-size: 0.9rem; padding: 12px 24px; }
             .summary-total .value { font-size: 1.1rem; }
             .product-specs { padding: 6px 10px; }
+            .toast { font-size: 0.85rem; padding: 12px 16px; min-width: 200px; }
         }
 
-        /* ===== SCROLLBAR ===== */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
@@ -406,7 +420,6 @@
                             <div class="cart-item-type">{{ item.type|title }}</div>
                             <div class="cart-item-price">KSh {{ "%.0f"|format(item.price) }}</div>
                             
-                            <!-- ===== DESCRIPTION ===== -->
                             {% if item.description %}
                             <div class="product-description">
                                 <i class="fas fa-align-left text-blue-500 mr-1 text-xs"></i>
@@ -414,7 +427,6 @@
                             </div>
                             {% endif %}
                             
-                            <!-- ===== SPECIFICATIONS ===== -->
                             {% if item.specs and item.specs|length > 0 %}
                             <div class="product-specs">
                                 <div class="flex flex-wrap">
@@ -443,7 +455,6 @@
                 </div>
                 {% endfor %}
 
-                <!-- Continue Shopping Link (Mobile) -->
                 <div class="text-center md:hidden mt-4">
                     <a href="/" class="text-blue-600 font-semibold hover:underline">
                         <i class="fas fa-arrow-left mr-1"></i> Continue Shopping
@@ -495,7 +506,6 @@
                         <i class="fas fa-arrow-left"></i> Continue Shopping
                     </a>
 
-                    <!-- Security Badge -->
                     <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-center gap-4 text-xs text-gray-400">
                         <span><i class="fas fa-lock text-green-500"></i> Secure Checkout</span>
                         <span><i class="fas fa-credit-card text-blue-500"></i> Multiple Payments</span>
@@ -520,7 +530,7 @@
         </div>
         {% endif %}
 
-        <!-- Recommended Products (Optional) -->
+        <!-- ===== RECOMMENDED PRODUCTS ===== -->
         {% if cart_items %}
         <div class="mt-12">
             <h3 class="font-semibold text-[#0f172a] text-lg mb-4">You might also like</h3>
@@ -532,12 +542,12 @@
                 </div>
                 <div class="bg-white p-4 rounded-xl border border-gray-100 hover:shadow-lg transition">
                     <div class="h-24 bg-gray-50 rounded-lg flex items-center justify-center text-3xl text-gray-300">🔌</div>
-                    <p class="font-semibold text-sm mt-2">Charger</p>
+                    <p class="font-semibold text-sm mt-2">Fast Charger</p>
                     <p class="text-blue-600 font-bold text-sm">KSh 2,500</p>
                 </div>
                 <div class="bg-white p-4 rounded-xl border border-gray-100 hover:shadow-lg transition">
                     <div class="h-24 bg-gray-50 rounded-lg flex items-center justify-center text-3xl text-gray-300">🎧</div>
-                    <p class="font-semibold text-sm mt-2">Earphones</p>
+                    <p class="font-semibold text-sm mt-2">Wireless Earphones</p>
                     <p class="text-blue-600 font-bold text-sm">KSh 4,500</p>
                 </div>
                 <div class="bg-white p-4 rounded-xl border border-gray-100 hover:shadow-lg transition">
@@ -550,10 +560,60 @@
         {% endif %}
     </section>
 
+    <!-- ===== FOOTER ===== -->
+    <footer class="app-footer">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="col-span-2 md:col-span-1">
+                <h3 class="text-white text-2xl font-bold flex items-center gap-2">
+                    <i class="fas fa-bolt text-blue-500"></i> Price<span class="text-blue-500">Point</span>
+                </h3>
+                <p class="mt-2 text-sm">Premium electronics for every need. Genuine products, transparent pricing, and fast delivery across Kenya.</p>
+                <div class="flex gap-3 mt-3">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook text-gray-400 hover:text-white transition text-lg"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter text-gray-400 hover:text-white transition text-lg"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram text-gray-400 hover:text-white transition text-lg"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube text-gray-400 hover:text-white transition text-lg"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 class="footer-heading">Shop</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#">All Products</a></li>
+                    <li><a href="#">Bundles</a></li>
+                    <li><a href="#">Best Sellers</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-heading">Support</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Returns & Refunds</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-heading">Stay Updated</h4>
+                <p class="text-sm text-gray-400 mb-2">Get the latest deals and new arrivals</p>
+                <form class="flex gap-2">
+                    <input type="email" placeholder="Your email" class="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm" />
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 transition">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 mt-10 pt-6 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+            <p>© 2026 <span class="text-white font-medium">Price Point Kenya</span>. All rights reserved.</p>
+            <div class="flex gap-4 mt-2 md:mt-0">
+                <a href="#" class="hover:text-white transition">Privacy Policy</a>
+                <a href="#" class="hover:text-white transition">Terms of Service</a>
+                <a href="#" class="hover:text-white transition">Cookie Policy</a>
+            </div>
+        </div>
+    </footer>
+
     <!-- ===== TOAST ===== -->
     <div id="toast" class="toast hidden">
         <div class="flex items-center gap-3">
-            <i class="fas fa-check-circle text-green-500 text-xl"></i>
+            <i class="fas fa-check-circle text-green-500 text-xl" id="toastIcon"></i>
             <p id="toastMessage" class="font-semibold text-[#0f172a]"></p>
         </div>
     </div>
@@ -584,7 +644,6 @@
                                 itemEl.style.transform = 'translateX(20px)';
                                 setTimeout(() => itemEl.remove(), 300);
                             }
-                            // Check if cart is now empty
                             const remainingItems = document.querySelectorAll('.cart-item');
                             if (remainingItems.length === 0) {
                                 location.reload();
@@ -593,14 +652,13 @@
                             qtyEl.textContent = data.quantity;
                         }
                     }
-                    // Update totals without full reload
                     updateTotals(data);
-                    showToast('Cart updated! 🛒');
+                    showToast('Cart updated! 🛒', 'success');
                 } else {
-                    showToast(data.message || 'Error updating cart');
+                    showToast(data.message || 'Error updating cart', 'error');
                 }
             })
-            .catch(err => showToast('Error: ' + err.message))
+            .catch(err => showToast('Error: ' + err.message, 'error'))
             .finally(() => {
                 if (btn) {
                     btn.disabled = false;
@@ -627,7 +685,6 @@
                     }
                 }
                 
-                // Update cart count
                 const cartCount = document.getElementById('cartCount');
                 if (cartCount && data.total_items !== undefined) {
                     cartCount.textContent = data.total_items;
@@ -636,10 +693,22 @@
         }
 
         // ===== TOAST =====
-        function showToast(message) {
+        function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+            
             toastMessage.textContent = message;
+            toast.className = 'toast';
+            
+            if (type === 'success') {
+                toastIcon.className = 'fas fa-check-circle text-green-500 text-xl';
+                toast.classList.add('animate-slide-up');
+            } else {
+                toastIcon.className = 'fas fa-exclamation-circle text-red-500 text-xl';
+                toast.classList.add('animate-slide-up');
+            }
+            
             toast.classList.remove('hidden');
             clearTimeout(window.toastTimeout);
             window.toastTimeout = setTimeout(() => toast.classList.add('hidden'), 3000);
