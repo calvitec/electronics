@@ -11,5 +11,9 @@
             "src": "/(.*)",
             "dest": "app.py"
         }
-    ]
+    ],
+    "env": {
+        "SUPABASE_URL": "https://hzqrdwerkgfmfaufabjr.supabase.co",
+        "SUPABASE_KEY": "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld"
+    }
 }
