@@ -28,6 +28,7 @@ else:
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB max file size
 
+# Create directories with proper error handling
 try:
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     os.makedirs(STATIC_FOLDER, exist_ok=True)
@@ -85,17 +86,38 @@ def load_json(file_path):
         if os.path.exists(file_path):
             with open(file_path, 'r') as f:
                 return json.load(f)
+        # Create empty file if it doesn't exist
+        with open(file_path, 'w') as f:
+            json.dump([], f)
+        return []
+    except json.JSONDecodeError:
+        # If JSON is corrupted, reset it
+        with open(file_path, 'w') as f:
+            json.dump([], f)
         return []
     except:
         return []
 
 def save_json(file_path, data):
     try:
+        # Ensure data is a list
+        if not isinstance(data, list):
+            data = []
         with open(file_path, 'w') as f:
             json.dump(data, f, indent=2)
         return True
     except:
         return False
+
+# Initialize JSON files if they don't exist
+def initialize_json_files():
+    files_to_create = ['products.json', 'bundles.json', 'orders.json']
+    for file in files_to_create:
+        if not os.path.exists(file):
+            with open(file, 'w') as f:
+                json.dump([], f)
+
+initialize_json_files()
 
 # ================================================================
 # ===== DATABASE FUNCTIONS - PRODUCTS =====
@@ -118,7 +140,7 @@ def load_products():
                     return data['items']
                 return data
         except Exception as e:
-            print(f"Error loading products: {e}")
+            print(f"Error loading products from Supabase: {e}")
     
     data = load_json('products.json')
     if isinstance(data, dict) and 'items' in data:
@@ -138,11 +160,11 @@ def load_product_by_id(product_id):
             )
             if response.status_code == 200:
                 data = response.json()
-                if data:
+                if data and len(data) > 0:
                     return data[0]
         except:
             pass
-    products = load_json('products.json')
+    products = load_products()
     for product in products:
         if str(product.get('id')) == str(product_id):
             return product
@@ -161,7 +183,7 @@ def load_products_by_category(category):
                 return response.json()
         except:
             pass
-    products = load_json('products.json')
+    products = load_products()
     return [p for p in products if p.get('category') == category]
 
 def load_bundles():
@@ -233,7 +255,7 @@ def save_product_to_db(product_data):
                 )
             print(f"✅ Product saved to Supabase: {product_copy.get('id')}")
             
-            products = load_json('products.json')
+            products = load_products()
             found = False
             for p in products:
                 if str(p.get('id')) == str(product_copy.get('id')):
@@ -253,7 +275,7 @@ def save_product_to_db(product_data):
 
 def save_product_to_json_only(product_data):
     """Save product to JSON file only (fallback)"""
-    products = load_json('products.json')
+    products = load_products()
     found = False
     for p in products:
         if str(p.get('id')) == str(product_data.get('id')):
@@ -305,11 +327,15 @@ def load_orders():
     if not isinstance(json_orders, list):
         json_orders = []
 
+    # Create a dictionary to merge orders, keeping Supabase versions if they exist
     merged = {}
+    # Start with JSON orders
     for order in json_orders:
         oid = order.get('order_id')
         if oid:
             merged[oid] = order
+    
+    # Override with Supabase orders (they're the source of truth)
     for order in supabase_orders:
         oid = order.get('order_id')
         if oid:
@@ -321,6 +347,7 @@ def load_orders():
 
 def save_order_to_db(order_data):
     """Save order to Supabase (if connected) AND always to the local JSON backup"""
+    # Always save to JSON first
     json_saved = save_order_to_json(order_data)
 
     if DB_CONNECTED:
@@ -348,22 +375,15 @@ def save_order_to_db(order_data):
 def save_order_to_json(order_data):
     """Save order to JSON file (used as backup on every order)"""
     try:
-        orders = []
-        if os.path.exists('orders.json'):
-            with open('orders.json', 'r') as f:
-                try:
-                    orders = json.load(f)
-                    if not isinstance(orders, list):
-                        orders = []
-                except:
-                    orders = []
+        orders = load_json('orders.json')
+        if not isinstance(orders, list):
+            orders = []
         
+        # Remove existing order if any (update instead of duplicate)
         orders = [o for o in orders if o.get('order_id') != order_data.get('order_id')]
         orders.insert(0, order_data)
         
-        with open('orders.json', 'w') as f:
-            json.dump(orders, f, indent=2)
-        
+        save_json('orders.json', orders)
         print(f"✅ Order saved to JSON: {order_data.get('order_id')}")
         return True
     except Exception as e:
@@ -417,7 +437,7 @@ def get_sales_analytics():
         product_lookup = {}
         for p in products:
             if p and p.get('id'):
-                product_lookup[p.get('id')] = p
+                product_lookup[str(p.get('id'))] = p
         
         total_revenue = 0
         total_cost = 0
@@ -474,7 +494,7 @@ def get_sales_analytics():
             
             items = order.get('items', [])
             for item in items:
-                product_id = item.get('product_id')
+                product_id = str(item.get('product_id', ''))
                 quantity = item.get('quantity', 1)
                 price = item.get('price', 0)
                 item_total = item.get('total', price * quantity)
@@ -555,12 +575,12 @@ def index():
     products_dict = {}
     for p in products_list:
         if p and 'id' in p:
-            products_dict[p['id']] = p
+            products_dict[str(p['id'])] = p
     
     bundles_dict = {}
     for b in bundles_list:
         if b and 'id' in b:
-            bundles_dict[b['id']] = b
+            bundles_dict[str(b['id'])] = b
     
     best_sellers = [p for p in products_list if p.get('badge') == 'Best Seller']
     new_arrivals = [p for p in products_list if p.get('badge') == 'New']
@@ -594,7 +614,7 @@ def category_page(category_name):
     products_dict = {}
     for p in products:
         if p and 'id' in p:
-            products_dict[p['id']] = p
+            products_dict[str(p['id'])] = p
     return render_template('category.html',
         products=products_dict,
         category_name=category_name,
@@ -609,12 +629,12 @@ def product_detail(product_id):
         return redirect(url_for('index'))
     
     related = [p for p in load_products_by_category(product.get('category')) 
-               if p.get('id') != product_id][:4]
+               if str(p.get('id')) != product_id][:4]
     
     related_dict = {}
     for r in related:
         if r and 'id' in r:
-            related_dict[r['id']] = r
+            related_dict[str(r['id'])] = r
     
     return render_template('product.html',
         product=product,
@@ -942,8 +962,9 @@ def place_order():
     try:
         cart = get_cart()
         if not cart:
-            return jsonify({'success': False, 'message': 'Cart is empty'})
+            return jsonify({'success': False, 'message': 'Cart is empty'}), 400
         
+        # Get customer data
         if request.is_json:
             data = request.get_json()
         else:
@@ -954,28 +975,38 @@ def place_order():
                 'customer_address': request.form.get('customer_address', 'N/A')
             }
         
+        # Validate required fields
+        if not data.get('customer_name'):
+            return jsonify({'success': False, 'message': 'Customer name is required'}), 400
+        
         subtotal = 0
         products = load_products()
         bundles = load_bundles()
         order_items = []
         products_to_update = []
         
+        # Process each cart item
         for item_id, quantity in cart.items():
+            if quantity <= 0:
+                continue
+                
             item_found = False
+            
+            # Check if it's a product
             for p in products:
                 if str(p.get('id')) == str(item_id):
                     current_stock = p.get('stock', 0)
                     if current_stock < quantity:
                         return jsonify({
                             'success': False,
-                            'message': f'Not enough stock for {p.get("name")}. Available: {current_stock}'
+                            'message': f'Not enough stock for {p.get("name", "Product")}. Available: {current_stock}'
                         }), 400
                     
                     item_total = p.get('price', 0) * quantity
                     subtotal += item_total
                     order_items.append({
                         'product_id': item_id,
-                        'name': p.get('name'),
+                        'name': p.get('name', 'Product'),
                         'price': p.get('price', 0),
                         'quantity': quantity,
                         'total': item_total,
@@ -983,12 +1014,13 @@ def place_order():
                     })
                     item_found = True
                     
-                    current_stock = p.get('stock', 0)
+                    # Update stock
                     new_stock = max(0, current_stock - quantity)
                     p['stock'] = new_stock
                     products_to_update.append(dict(p))
                     break
             
+            # If not a product, check if it's a bundle
             if not item_found:
                 for b in bundles:
                     if str(b.get('id')) == str(item_id):
@@ -996,23 +1028,37 @@ def place_order():
                         subtotal += item_total
                         order_items.append({
                             'product_id': item_id,
-                            'name': b.get('name'),
+                            'name': b.get('name', 'Bundle'),
                             'price': b.get('price', 0),
                             'quantity': quantity,
                             'total': item_total,
                             'type': 'bundle'
                         })
+                        item_found = True
                         break
+            
+            if not item_found:
+                return jsonify({
+                    'success': False, 
+                    'message': f'Item {item_id} not found'
+                }), 400
         
+        # If no items in order
+        if not order_items:
+            return jsonify({'success': False, 'message': 'No valid items in cart'}), 400
+        
+        # Calculate totals
         shipping = 0 if subtotal >= 50000 else 800
         total = subtotal + shipping
         
+        # Generate order ID
         order_id = f"ELEC-{uuid.uuid4().hex[:8].upper()}"
         
-        customer_name = data.get('customer_name', 'Customer')
-        customer_email = data.get('customer_email', 'customer@example.com')
-        customer_phone = data.get('customer_phone', 'N/A')
-        customer_address = data.get('customer_address', 'N/A')
+        # Prepare customer data
+        customer_name = data.get('customer_name', 'Customer').strip()
+        customer_email = data.get('customer_email', 'customer@example.com').strip()
+        customer_phone = data.get('customer_phone', 'N/A').strip()
+        customer_address = data.get('customer_address', 'N/A').strip()
         
         order_data = {
             'order_id': order_id,
@@ -1033,13 +1079,16 @@ def place_order():
         
         print(f"📦 Order data: {json.dumps(order_data, indent=2)}")
         
+        # Save order
         if save_order_to_db(order_data):
             print(f"📦 Reducing stock for {len(products_to_update)} items...")
             
+            # Update product stock
             for updated_product in products_to_update:
                 save_product_to_db(updated_product)
                 print(f"✅ Stock updated: {updated_product.get('name')} → {updated_product.get('stock')}")
             
+            # Clear cart
             session['cart'] = {}
             session.modified = True
             
@@ -1349,6 +1398,12 @@ def admin_pos_place_order():
     try:
         data = request.get_json()
         
+        if not data:
+            return jsonify({'success': False, 'message': 'Invalid data'}), 400
+        
+        if not data.get('items'):
+            return jsonify({'success': False, 'message': 'No items in order'}), 400
+        
         order_id = f"POS-{uuid.uuid4().hex[:8].upper()}"
 
         products = load_products()
@@ -1374,19 +1429,24 @@ def admin_pos_place_order():
 
             items.append({
                 'product_id': item.get('product_id'),
-                'name': item.get('name'),
-                'price': item.get('price'),
+                'name': item.get('name', 'Product'),
+                'price': item.get('price', 0),
                 'quantity': quantity,
-                'total': item.get('total'),
+                'total': item.get('total', 0),
                 'type': 'product'
             })
+        
+        # Calculate totals
+        subtotal = sum(item.get('total', 0) for item in items)
+        shipping = data.get('shipping', 0)
+        total = subtotal + shipping
         
         order_data = {
             'order_id': order_id,
             'items': items,
-            'subtotal': data.get('subtotal', 0),
-            'shipping': data.get('shipping', 0),
-            'total': data.get('total', 0),
+            'subtotal': subtotal,
+            'shipping': shipping,
+            'total': total,
             'status': 'confirmed',
             'source': 'pos',
             'created_at': datetime.utcnow().isoformat(),
@@ -1466,14 +1526,16 @@ def admin_products():
         return jsonify({'success': False, 'message': 'Unauthorized'}), 401
     
     try:
+        product_id = request.form.get('id') or str(uuid.uuid4())
+        
         product_data = {
-            'id': request.form.get('id'),
-            'name': request.form.get('name'),
+            'id': product_id,
+            'name': request.form.get('name', 'Product'),
             'price': float(request.form.get('price', 0)),
             'cost_price': float(request.form.get('cost_price', 0)) or 0,
-            'image': request.form.get('image'),
-            'category': request.form.get('category'),
-            'description': request.form.get('description'),
+            'image': request.form.get('image', ''),
+            'category': request.form.get('category', 'Other'),
+            'description': request.form.get('description', ''),
             'rating': float(request.form.get('rating', 4.0)),
             'reviews': int(request.form.get('reviews', 0)),
             'badge': request.form.get('badge', ''),
@@ -1483,7 +1545,7 @@ def admin_products():
         }
         
         if save_product_to_db(product_data):
-            return jsonify({'success': True, 'message': 'Product saved successfully!'})
+            return jsonify({'success': True, 'message': 'Product saved successfully!', 'product': product_data})
         else:
             return jsonify({'success': False, 'message': 'Error saving product'}), 500
     except Exception as e:
@@ -1505,7 +1567,7 @@ def admin_delete_product(product_id):
             if response.status_code in [200, 204]:
                 return jsonify({'success': True})
         else:
-            products = load_json('products.json')
+            products = load_products()
             if isinstance(products, list):
                 products = [p for p in products if str(p.get('id')) != str(product_id)]
             else:
@@ -1534,7 +1596,7 @@ def admin_update_order_status(order_id):
                 timeout=10
             )
             if response.status_code in [200, 204]:
-                orders = load_json('orders.json')
+                orders = load_orders()
                 if isinstance(orders, list):
                     for order in orders:
                         if order.get('order_id') == order_id:
@@ -1543,7 +1605,7 @@ def admin_update_order_status(order_id):
                     save_json('orders.json', orders)
                 return jsonify({'success': True})
         else:
-            orders = load_json('orders.json')
+            orders = load_orders()
             if isinstance(orders, list):
                 for order in orders:
                     if order.get('order_id') == order_id:
