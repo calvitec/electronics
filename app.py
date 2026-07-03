@@ -21,27 +21,23 @@ IS_VERCEL = 'VERCEL' in os.environ or 'NOW' in os.environ
 if IS_VERCEL:
     UPLOAD_FOLDER = '/tmp/static/uploads'
     STATIC_FOLDER = '/tmp/static'
-    DATA_FOLDER = '/tmp/data'  # For JSON files
+    JSON_FOLDER = '/tmp'  # Vercel writable directory
 else:
     UPLOAD_FOLDER = 'static/uploads'
     STATIC_FOLDER = 'static'
-    DATA_FOLDER = '.'
+    JSON_FOLDER = '.'  # Current directory for local
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB max file size
 
-# Create necessary directories
 try:
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     os.makedirs(STATIC_FOLDER, exist_ok=True)
-    os.makedirs(DATA_FOLDER, exist_ok=True)
 except OSError:
     UPLOAD_FOLDER = '/tmp/static/uploads'
     STATIC_FOLDER = '/tmp/static'
-    DATA_FOLDER = '/tmp/data'
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     os.makedirs(STATIC_FOLDER, exist_ok=True)
-    os.makedirs(DATA_FOLDER, exist_ok=True)
 
 app.static_folder = STATIC_FOLDER
 
@@ -65,11 +61,10 @@ DB_TYPE = 'json'
 
 def test_supabase_connection():
     try:
-        # Shorter timeout for Vercel
         response = requests.get(
             f"{SUPABASE_URL}/rest/v1/products?select=count",
             headers=SUPABASE_HEADERS,
-            timeout=5
+            timeout=10
         )
         return response.status_code == 200
     except:
@@ -86,12 +81,10 @@ except Exception as e:
     print(f"⚠️ Supabase error: {e}")
     print("📁 Using JSON storage")
 
-# ===== JSON FALLBACK - VERCEL COMPATIBLE =====
+# ===== JSON FALLBACK - FIXED FOR VERCEL =====
 def get_json_path(filename):
-    """Get the correct path for JSON files"""
-    if IS_VERCEL:
-        return os.path.join('/tmp/data', filename)
-    return filename
+    """Returns the correct path for JSON files"""
+    return os.path.join(JSON_FOLDER, filename)
 
 def load_json(file_path):
     try:
@@ -99,14 +92,12 @@ def load_json(file_path):
         if os.path.exists(full_path):
             with open(full_path, 'r') as f:
                 return json.load(f)
-        # Create default empty file with sample data
-        sample_data = get_sample_data(file_path)
+        # Create empty file if it doesn't exist
         with open(full_path, 'w') as f:
-            json.dump(sample_data, f, indent=2)
-        return sample_data
-    except Exception as e:
-        print(f"Error loading {file_path}: {e}")
-        return get_sample_data(file_path)
+            json.dump([], f)
+        return []
+    except:
+        return []
 
 def save_json(file_path, data):
     try:
@@ -114,57 +105,8 @@ def save_json(file_path, data):
         with open(full_path, 'w') as f:
             json.dump(data, f, indent=2)
         return True
-    except Exception as e:
-        print(f"Error saving {file_path}: {e}")
+    except:
         return False
-
-def get_sample_data(filename):
-    """Return sample data for empty files"""
-    if 'products' in filename:
-        return [
-            {
-                'id': '1',
-                'name': 'iPhone 15 Pro Max',
-                'price': 150000,
-                'cost_price': 120000,
-                'image': 'https://via.placeholder.com/300x300/000/fff?text=iPhone',
-                'category': 'Phones',
-                'description': 'Latest iPhone with amazing features',
-                'rating': 4.8,
-                'reviews': 120,
-                'badge': 'Best Seller',
-                'stock': 50,
-                'original_price': 165000,
-                'specs': ['6.7" Display', '48MP Camera', 'A17 Pro Chip']
-            },
-            {
-                'id': '2',
-                'name': 'MacBook Pro M3',
-                'price': 250000,
-                'cost_price': 200000,
-                'image': 'https://via.placeholder.com/300x300/000/fff?text=MacBook',
-                'category': 'Laptops',
-                'description': 'Powerful laptop for professionals',
-                'rating': 4.9,
-                'reviews': 85,
-                'badge': 'New',
-                'stock': 30,
-                'original_price': 280000,
-                'specs': ['14" Display', 'M3 Chip', '16GB RAM']
-            }
-        ]
-    elif 'bundles' in filename:
-        return [
-            {
-                'id': 'b1',
-                'name': 'Student Bundle',
-                'price': 350000,
-                'image': 'https://via.placeholder.com/300x300/000/fff?text=Bundle',
-                'products': ['1', '2']
-            }
-        ]
-    else:  # orders
-        return []
 
 # ================================================================
 # ===== DATABASE FUNCTIONS - PRODUCTS =====
@@ -177,20 +119,17 @@ def load_products():
             response = requests.get(
                 f"{SUPABASE_URL}/rest/v1/products?select=*",
                 headers=SUPABASE_HEADERS,
-                timeout=5  # Shorter timeout for Vercel
+                timeout=10
             )
             if response.status_code == 200:
                 data = response.json()
                 if isinstance(data, list):
-                    # Also save to JSON as backup
-                    save_json('products.json', data)
                     return data
                 if isinstance(data, dict) and 'items' in data:
-                    save_json('products.json', data['items'])
                     return data['items']
                 return data
         except Exception as e:
-            print(f"Error loading products from Supabase: {e}")
+            print(f"Error loading products: {e}")
     
     data = load_json('products.json')
     if isinstance(data, dict) and 'items' in data:
@@ -206,7 +145,7 @@ def load_product_by_id(product_id):
             response = requests.get(
                 f"{SUPABASE_URL}/rest/v1/products?id=eq.{product_id}",
                 headers=SUPABASE_HEADERS,
-                timeout=5
+                timeout=10
             )
             if response.status_code == 200:
                 data = response.json()
@@ -214,7 +153,7 @@ def load_product_by_id(product_id):
                     return data[0]
         except:
             pass
-    products = load_products()
+    products = load_json('products.json')
     for product in products:
         if str(product.get('id')) == str(product_id):
             return product
@@ -227,13 +166,13 @@ def load_products_by_category(category):
             response = requests.get(
                 f"{SUPABASE_URL}/rest/v1/products?category=eq.{category}",
                 headers=SUPABASE_HEADERS,
-                timeout=5
+                timeout=10
             )
             if response.status_code == 200:
                 return response.json()
         except:
             pass
-    products = load_products()
+    products = load_json('products.json')
     return [p for p in products if p.get('category') == category]
 
 def load_bundles():
@@ -243,15 +182,13 @@ def load_bundles():
             response = requests.get(
                 f"{SUPABASE_URL}/rest/v1/bundles?select=*",
                 headers=SUPABASE_HEADERS,
-                timeout=5
+                timeout=10
             )
             if response.status_code == 200:
                 data = response.json()
                 if isinstance(data, list):
-                    save_json('bundles.json', data)
                     return data
                 if isinstance(data, dict) and 'items' in data:
-                    save_json('bundles.json', data['items'])
                     return data['items']
                 return data
         except Exception as e:
@@ -281,7 +218,7 @@ def get_cart():
     return cart
 
 def save_product_to_db(product_data):
-    """Save product to Supabase or JSON"""
+    """Save product to Supabase or JSON - SINGLE SAVE"""
     product_copy = dict(product_data)
     
     if DB_CONNECTED:
@@ -289,25 +226,25 @@ def save_product_to_db(product_data):
             check = requests.get(
                 f"{SUPABASE_URL}/rest/v1/products?id=eq.{product_copy.get('id')}",
                 headers=SUPABASE_HEADERS,
-                timeout=5
+                timeout=10
             )
             if check.status_code == 200 and check.json():
                 response = requests.patch(
                     f"{SUPABASE_URL}/rest/v1/products?id=eq.{product_copy.get('id')}",
                     headers=SUPABASE_HEADERS,
                     json=product_copy,
-                    timeout=5
+                    timeout=10
                 )
             else:
                 response = requests.post(
                     f"{SUPABASE_URL}/rest/v1/products",
                     headers=SUPABASE_HEADERS,
                     json=product_copy,
-                    timeout=5
+                    timeout=10
                 )
             print(f"✅ Product saved to Supabase: {product_copy.get('id')}")
             
-            products = load_products()
+            products = load_json('products.json')
             found = False
             for p in products:
                 if str(p.get('id')) == str(product_copy.get('id')):
@@ -327,7 +264,7 @@ def save_product_to_db(product_data):
 
 def save_product_to_json_only(product_data):
     """Save product to JSON file only (fallback)"""
-    products = load_products()
+    products = load_json('products.json')
     found = False
     for p in products:
         if str(p.get('id')) == str(product_data.get('id')):
@@ -356,14 +293,16 @@ def update_product_stock(product_id, quantity):
 # ================================================================
 
 def load_orders():
-    """Load all orders"""
+    """
+    Load all orders, merging Supabase and the local JSON backup.
+    """
     supabase_orders = []
     if DB_CONNECTED:
         try:
             response = requests.get(
                 f"{SUPABASE_URL}/rest/v1/orders?select=*&order=created_at.desc",
                 headers=SUPABASE_HEADERS,
-                timeout=5
+                timeout=10
             )
             if response.status_code == 200:
                 data = response.json()
@@ -392,7 +331,7 @@ def load_orders():
     return all_orders
 
 def save_order_to_db(order_data):
-    """Save order to Supabase and JSON"""
+    """Save order to Supabase (if connected) AND always to the local JSON backup"""
     json_saved = save_order_to_json(order_data)
 
     if DB_CONNECTED:
@@ -401,7 +340,7 @@ def save_order_to_db(order_data):
                 f"{SUPABASE_URL}/rest/v1/orders",
                 headers=SUPABASE_HEADERS,
                 json=order_data,
-                timeout=5
+                timeout=10
             )
             print(f"Supabase response status: {response.status_code}")
             
@@ -409,7 +348,7 @@ def save_order_to_db(order_data):
                 print(f"✅ Order saved to Supabase: {order_data.get('order_id')}")
                 return True
             else:
-                print(f"❌ Supabase save failed ({response.status_code})")
+                print(f"❌ Supabase save failed ({response.status_code}), JSON backup already saved")
                 return json_saved
         except Exception as e:
             print(f"❌ Error saving order to Supabase: {e}")
@@ -418,7 +357,7 @@ def save_order_to_db(order_data):
         return json_saved
 
 def save_order_to_json(order_data):
-    """Save order to JSON file"""
+    """Save order to JSON file (used as backup on every order)"""
     try:
         orders = load_json('orders.json')
         if not isinstance(orders, list):
@@ -428,6 +367,7 @@ def save_order_to_json(order_data):
         orders.insert(0, order_data)
         
         save_json('orders.json', orders)
+        
         print(f"✅ Order saved to JSON: {order_data.get('order_id')}")
         return True
     except Exception as e:
@@ -481,7 +421,7 @@ def get_sales_analytics():
         product_lookup = {}
         for p in products:
             if p and p.get('id'):
-                product_lookup[str(p.get('id'))] = p
+                product_lookup[p.get('id')] = p
         
         total_revenue = 0
         total_cost = 0
@@ -538,7 +478,7 @@ def get_sales_analytics():
             
             items = order.get('items', [])
             for item in items:
-                product_id = str(item.get('product_id', ''))
+                product_id = item.get('product_id')
                 quantity = item.get('quantity', 1)
                 price = item.get('price', 0)
                 item_total = item.get('total', price * quantity)
@@ -613,97 +553,77 @@ def get_sales_analytics():
 
 @app.route('/')
 def index():
-    try:
-        products_list = load_products()
-        bundles_list = load_bundles()
-        
-        products_dict = {}
-        for p in products_list:
-            if p and 'id' in p:
-                products_dict[str(p['id'])] = p
-        
-        bundles_dict = {}
-        for b in bundles_list:
-            if b and 'id' in b:
-                bundles_dict[str(b['id'])] = b
-        
-        best_sellers = [p for p in products_list if p.get('badge') == 'Best Seller']
-        new_arrivals = [p for p in products_list if p.get('badge') == 'New']
-        trending = [p for p in products_list if p.get('badge') == 'Trending']
-        
-        categories = {}
-        for p in products_list:
-            cat = p.get('category', 'Other')
-            if cat not in categories:
-                categories[cat] = {
-                    'name': cat,
-                    'icon': get_category_icon(cat),
-                    'count': 0
-                }
-            categories[cat]['count'] += 1
-        
-        return render_template('shop.html',
-            products=products_dict,
-            all_products=products_dict,
-            bundles=bundles_dict,
-            best_sellers=best_sellers,
-            new_arrivals=new_arrivals,
-            trending=trending,
-            categories=categories,
-            CATEGORIES=get_all_categories()
-        )
-    except Exception as e:
-        print(f"Error in index: {e}")
-        traceback.print_exc()
-        # Return a simple HTML page if template fails
-        return """
-        <h1>📱 Price Point</h1>
-        <p>Welcome to Price Point Electronics Shop</p>
-        <p><a href="/api/status">Check Status</a></p>
-        """
+    products_list = load_products()
+    bundles_list = load_bundles()
+    
+    products_dict = {}
+    for p in products_list:
+        if p and 'id' in p:
+            products_dict[p['id']] = p
+    
+    bundles_dict = {}
+    for b in bundles_list:
+        if b and 'id' in b:
+            bundles_dict[b['id']] = b
+    
+    best_sellers = [p for p in products_list if p.get('badge') == 'Best Seller']
+    new_arrivals = [p for p in products_list if p.get('badge') == 'New']
+    trending = [p for p in products_list if p.get('badge') == 'Trending']
+    
+    categories = {}
+    for p in products_list:
+        cat = p.get('category', 'Other')
+        if cat not in categories:
+            categories[cat] = {
+                'name': cat,
+                'icon': get_category_icon(cat),
+                'count': 0
+            }
+        categories[cat]['count'] += 1
+    
+    return render_template('shop.html',
+        products=products_dict,
+        all_products=products_dict,
+        bundles=bundles_dict,
+        best_sellers=best_sellers,
+        new_arrivals=new_arrivals,
+        trending=trending,
+        categories=categories,
+        CATEGORIES=get_all_categories()
+    )
 
 @app.route('/category/<category_name>')
 def category_page(category_name):
-    try:
-        products = load_products_by_category(category_name)
-        products_dict = {}
-        for p in products:
-            if p and 'id' in p:
-                products_dict[str(p['id'])] = p
-        return render_template('category.html',
-            products=products_dict,
-            category_name=category_name,
-            CATEGORIES=get_all_categories()
-        )
-    except Exception as e:
-        print(f"Error in category: {e}")
-        flash('Error loading category', 'danger')
-        return redirect(url_for('index'))
+    products = load_products_by_category(category_name)
+    products_dict = {}
+    for p in products:
+        if p and 'id' in p:
+            products_dict[p['id']] = p
+    return render_template('category.html',
+        products=products_dict,
+        category_name=category_name,
+        CATEGORIES=get_all_categories()
+    )
 
 @app.route('/product/<product_id>')
 def product_detail(product_id):
-    try:
-        product = load_product_by_id(product_id)
-        if not product:
-            flash('Product not found', 'danger')
-            return redirect(url_for('index'))
-        
-        related = [p for p in load_products_by_category(product.get('category')) 
-                   if str(p.get('id')) != product_id][:4]
-        
-        related_dict = {}
-        for r in related:
-            if r and 'id' in r:
-                related_dict[str(r['id'])] = r
-        
-        return render_template('product.html',
-            product=product,
-            related=related_dict
-        )
-    except Exception as e:
-        print(f"Error in product detail: {e}")
-        flash('Error loading product', 'danger')
+    product = load_product_by_id(product_id)
+    if not product:
+        flash('Product not found', 'danger')
         return redirect(url_for('index'))
+    
+    related = [p for p in load_products_by_category(product.get('category')) 
+               if p.get('id') != product_id][:4]
+    
+    related_dict = {}
+    for r in related:
+        if r and 'id' in r:
+            related_dict[r['id']] = r
+    
+    return render_template('product.html',
+        product=product,
+        related=related_dict
+    )
 
 # ================================================================
 # ===== IMAGE UPLOAD ROUTE =====
@@ -742,73 +662,68 @@ def upload_image():
 
 @app.route('/cart')
 def cart_page():
-    try:
-        cart = get_cart()
-        cart_items = []
-        subtotal = 0
-        total_items = 0
-        products = load_products()
-        bundles = load_bundles()
+    cart = get_cart()
+    cart_items = []
+    subtotal = 0
+    total_items = 0
+    products = load_products()
+    bundles = load_bundles()
+    
+    for item_id, quantity in cart.items():
+        if quantity <= 0:
+            continue
         
-        for item_id, quantity in cart.items():
-            if quantity <= 0:
-                continue
-            
-            product = None
-            for p in products:
-                if str(p.get('id')) == str(item_id):
-                    product = p
-                    break
-            
-            if product:
-                item_total = product.get('price', 0) * quantity
+        product = None
+        for p in products:
+            if str(p.get('id')) == str(item_id):
+                product = p
+                break
+        
+        if product:
+            item_total = product.get('price', 0) * quantity
+            cart_items.append({
+                'id': item_id,
+                'name': product.get('name', 'Product'),
+                'price': product.get('price', 0),
+                'image': product.get('image', ''),
+                'type': 'product',
+                'quantity': quantity,
+                'item_total': item_total,
+                'stock': product.get('stock', 0),
+                'description': product.get('description', ''),
+                'specs': product.get('specs', [])
+            })
+            subtotal += item_total
+            total_items += quantity
+            continue
+        
+        for bundle in bundles:
+            if str(bundle.get('id')) == str(item_id):
+                item_total = bundle.get('price', 0) * quantity
                 cart_items.append({
                     'id': item_id,
-                    'name': product.get('name', 'Product'),
-                    'price': product.get('price', 0),
-                    'image': product.get('image', ''),
-                    'type': 'product',
+                    'name': bundle.get('name', 'Bundle'),
+                    'price': bundle.get('price', 0),
+                    'image': bundle.get('image', ''),
+                    'type': 'bundle',
                     'quantity': quantity,
                     'item_total': item_total,
-                    'stock': product.get('stock', 0),
-                    'description': product.get('description', ''),
-                    'specs': product.get('specs', [])
+                    'products': bundle.get('products', [])
                 })
                 subtotal += item_total
                 total_items += quantity
-                continue
-            
-            for bundle in bundles:
-                if str(bundle.get('id')) == str(item_id):
-                    item_total = bundle.get('price', 0) * quantity
-                    cart_items.append({
-                        'id': item_id,
-                        'name': bundle.get('name', 'Bundle'),
-                        'price': bundle.get('price', 0),
-                        'image': bundle.get('image', ''),
-                        'type': 'bundle',
-                        'quantity': quantity,
-                        'item_total': item_total,
-                        'products': bundle.get('products', [])
-                    })
-                    subtotal += item_total
-                    total_items += quantity
-                    break
-        
-        shipping = 0 if subtotal >= 50000 else 800
-        total = subtotal + shipping
-        
-        return render_template('cart.html',
-            cart_items=cart_items,
-            subtotal=subtotal,
-            shipping=shipping,
-            total=total,
-            total_items=total_items
-        )
-    except Exception as e:
-        print(f"Error in cart: {e}")
-        flash('Error loading cart', 'danger')
-        return redirect(url_for('index'))
+                break
+    
+    shipping = 0 if subtotal >= 50000 else 800
+    total = subtotal + shipping
+    
+    return render_template('cart.html',
+        cart_items=cart_items,
+        subtotal=subtotal,
+        shipping=shipping,
+        total=total,
+        total_items=total_items
+    )
 
 @app.route('/add-to-cart/<item_id>', methods=['POST'])
 def add_to_cart(item_id):
@@ -963,80 +878,75 @@ def remove_from_cart(item_id):
 
 @app.route('/checkout')
 def checkout_page():
-    try:
-        cart = get_cart()
-        if not cart:
-            flash('Your cart is empty', 'warning')
-            return redirect(url_for('index'))
+    cart = get_cart()
+    if not cart:
+        flash('Your cart is empty', 'warning')
+        return redirect(url_for('index'))
+    
+    cart_items = []
+    subtotal = 0
+    total_items = 0
+    products = load_products()
+    bundles = load_bundles()
+    
+    for item_id, quantity in cart.items():
+        if quantity <= 0:
+            continue
         
-        cart_items = []
-        subtotal = 0
-        total_items = 0
-        products = load_products()
-        bundles = load_bundles()
+        product = None
+        for p in products:
+            if str(p.get('id')) == str(item_id):
+                product = p
+                break
         
-        for item_id, quantity in cart.items():
-            if quantity <= 0:
-                continue
-            
-            product = None
-            for p in products:
-                if str(p.get('id')) == str(item_id):
-                    product = p
-                    break
-            
-            if product:
-                item_total = product.get('price', 0) * quantity
+        if product:
+            item_total = product.get('price', 0) * quantity
+            cart_items.append({
+                'id': item_id,
+                'name': product.get('name', 'Product'),
+                'price': product.get('price', 0),
+                'image': product.get('image', ''),
+                'type': 'product',
+                'quantity': quantity,
+                'item_total': item_total
+            })
+            subtotal += item_total
+            total_items += quantity
+            continue
+        
+        for bundle in bundles:
+            if str(bundle.get('id')) == str(item_id):
+                item_total = bundle.get('price', 0) * quantity
                 cart_items.append({
                     'id': item_id,
-                    'name': product.get('name', 'Product'),
-                    'price': product.get('price', 0),
-                    'image': product.get('image', ''),
-                    'type': 'product',
+                    'name': bundle.get('name', 'Bundle'),
+                    'price': bundle.get('price', 0),
+                    'image': bundle.get('image', ''),
+                    'type': 'bundle',
                     'quantity': quantity,
                     'item_total': item_total
                 })
                 subtotal += item_total
                 total_items += quantity
-                continue
-            
-            for bundle in bundles:
-                if str(bundle.get('id')) == str(item_id):
-                    item_total = bundle.get('price', 0) * quantity
-                    cart_items.append({
-                        'id': item_id,
-                        'name': bundle.get('name', 'Bundle'),
-                        'price': bundle.get('price', 0),
-                        'image': bundle.get('image', ''),
-                        'type': 'bundle',
-                        'quantity': quantity,
-                        'item_total': item_total
-                    })
-                    subtotal += item_total
-                    total_items += quantity
-                    break
-        
-        shipping = 0 if subtotal >= 50000 else 800
-        total = subtotal + shipping
-        
-        return render_template('checkout.html',
-            cart_items=cart_items,
-            subtotal=subtotal,
-            shipping=shipping,
-            total=total,
-            total_items=total_items
-        )
-    except Exception as e:
-        print(f"Error in checkout: {e}")
-        flash('Error loading checkout', 'danger')
-        return redirect(url_for('index'))
+                break
+    
+    shipping = 0 if subtotal >= 50000 else 800
+    total = subtotal + shipping
+    
+    return render_template('checkout.html',
+        cart_items=cart_items,
+        subtotal=subtotal,
+        shipping=shipping,
+        total=total,
+        total_items=total_items
+    )
 
 @app.route('/place-order', methods=['POST'])
 def place_order():
     try:
         cart = get_cart()
         if not cart:
-            return jsonify({'success': False, 'message': 'Cart is empty'}), 400
+            return jsonify({'success': False, 'message': 'Cart is empty'})
         
         if request.is_json:
             data = request.get_json()
@@ -1048,9 +958,6 @@ def place_order():
                 'customer_address': request.form.get('customer_address', 'N/A')
             }
         
-        if not data.get('customer_name'):
-            return jsonify({'success': False, 'message': 'Customer name is required'}), 400
-        
         subtotal = 0
         products = load_products()
         bundles = load_bundles()
@@ -1058,9 +965,6 @@ def place_order():
         products_to_update = []
         
         for item_id, quantity in cart.items():
-            if quantity <= 0:
-                continue
-                
             item_found = False
             for p in products:
                 if str(p.get('id')) == str(item_id):
@@ -1102,17 +1006,7 @@ def place_order():
                             'total': item_total,
                             'type': 'bundle'
                         })
-                        item_found = True
                         break
-            
-            if not item_found:
-                return jsonify({
-                    'success': False, 
-                    'message': f'Item {item_id} not found'
-                }), 400
-        
-        if not order_items:
-            return jsonify({'success': False, 'message': 'No valid items in cart'}), 400
         
         shipping = 0 if subtotal >= 50000 else 800
         total = subtotal + shipping
@@ -1189,6 +1083,7 @@ def api_status():
         bundles = load_bundles()
         orders = load_orders()
         
+        # Count unique customers
         customers = set()
         pos_orders = 0
         web_orders = 0
@@ -1274,16 +1169,6 @@ def test_order_api():
         'db_connected': DB_CONNECTED,
         'db_type': DB_TYPE
     })
-
-@app.route('/cart-count', methods=['GET'])
-def cart_count():
-    """Get cart count for header"""
-    try:
-        cart = get_cart()
-        count = sum(cart.values()) if cart and isinstance(cart, dict) else 0
-        return jsonify({'count': count})
-    except Exception as e:
-        return jsonify({'count': 0})
 
 # ================================================================
 # ===== ADMIN ROUTES =====
@@ -1430,49 +1315,43 @@ def admin_pos():
         flash('Please login first', 'danger')
         return redirect(url_for('admin_login'))
     
-    try:
-        products = load_products()
-        customers = []
-        
-        orders = load_orders()
-        customer_list = {}
-        for order in orders:
-            if order.get('customer') and order['customer'].get('name'):
-                name = order['customer']['name']
-                if name not in customer_list:
-                    customer_list[name] = {
-                        'name': name,
-                        'email': order['customer'].get('email', ''),
-                        'phone': order['customer'].get('phone', ''),
-                        'orders': 0,
-                        'total_spent': 0
-                    }
-                customer_list[name]['orders'] += 1
-                customer_list[name]['total_spent'] += order.get('total', 0)
-        
-        customers = list(customer_list.values())
-        customers.sort(key=lambda x: x['orders'], reverse=True)
-        
-        return render_template('pos.html',
-            products=products,
-            customers=customers
-        )
-    except Exception as e:
-        print(f"Error in POS: {e}")
-        flash('Error loading POS', 'danger')
-        return redirect(url_for('admin_dashboard'))
+    products = load_products()
+    customers = []
+    
+    orders = load_orders()
+    customer_list = {}
+    for order in orders:
+        if order.get('customer') and order['customer'].get('name'):
+            name = order['customer']['name']
+            if name not in customer_list:
+                customer_list[name] = {
+                    'name': name,
+                    'email': order['customer'].get('email', ''),
+                    'phone': order['customer'].get('phone', ''),
+                    'orders': 0,
+                    'total_spent': 0
+                }
+            customer_list[name]['orders'] += 1
+            customer_list[name]['total_spent'] += order.get('total', 0)
+    
+    customers = list(customer_list.values())
+    customers.sort(key=lambda x: x['orders'], reverse=True)
+    
+    return render_template('pos.html',
+        products=products,
+        customers=customers
+    )
 
 @app.route('/admin/pos/place-order', methods=['POST'])
 def admin_pos_place_order():
-    """Place order from POS system"""
+    """
+    Place order from POS system.
+    """
     if not session.get('admin_logged_in'):
         return jsonify({'success': False, 'message': 'Unauthorized'}), 401
     
     try:
         data = request.get_json()
-        
-        if not data or not data.get('items'):
-            return jsonify({'success': False, 'message': 'No items in order'}), 400
         
         order_id = f"POS-{uuid.uuid4().hex[:8].upper()}"
 
@@ -1499,23 +1378,19 @@ def admin_pos_place_order():
 
             items.append({
                 'product_id': item.get('product_id'),
-                'name': item.get('name', 'Product'),
-                'price': item.get('price', 0),
+                'name': item.get('name'),
+                'price': item.get('price'),
                 'quantity': quantity,
-                'total': item.get('total', 0),
+                'total': item.get('total'),
                 'type': 'product'
             })
-        
-        subtotal = sum(item.get('total', 0) for item in items)
-        shipping = data.get('shipping', 0)
-        total = subtotal + shipping
         
         order_data = {
             'order_id': order_id,
             'items': items,
-            'subtotal': subtotal,
-            'shipping': shipping,
-            'total': total,
+            'subtotal': data.get('subtotal', 0),
+            'shipping': data.get('shipping', 0),
+            'total': data.get('total', 0),
             'status': 'confirmed',
             'source': 'pos',
             'created_at': datetime.utcnow().isoformat(),
@@ -1596,13 +1471,13 @@ def admin_products():
     
     try:
         product_data = {
-            'id': request.form.get('id', str(uuid.uuid4())),
-            'name': request.form.get('name', 'Product'),
+            'id': request.form.get('id'),
+            'name': request.form.get('name'),
             'price': float(request.form.get('price', 0)),
             'cost_price': float(request.form.get('cost_price', 0)) or 0,
-            'image': request.form.get('image', ''),
-            'category': request.form.get('category', 'Other'),
-            'description': request.form.get('description', ''),
+            'image': request.form.get('image'),
+            'category': request.form.get('category'),
+            'description': request.form.get('description'),
             'rating': float(request.form.get('rating', 4.0)),
             'reviews': int(request.form.get('reviews', 0)),
             'badge': request.form.get('badge', ''),
@@ -1612,7 +1487,7 @@ def admin_products():
         }
         
         if save_product_to_db(product_data):
-            return jsonify({'success': True, 'message': 'Product saved successfully!', 'product': product_data})
+            return jsonify({'success': True, 'message': 'Product saved successfully!'})
         else:
             return jsonify({'success': False, 'message': 'Error saving product'}), 500
     except Exception as e:
@@ -1629,12 +1504,12 @@ def admin_delete_product(product_id):
             response = requests.delete(
                 f"{SUPABASE_URL}/rest/v1/products?id=eq.{product_id}",
                 headers=SUPABASE_HEADERS,
-                timeout=5
+                timeout=10
             )
             if response.status_code in [200, 204]:
                 return jsonify({'success': True})
         else:
-            products = load_products()
+            products = load_json('products.json')
             if isinstance(products, list):
                 products = [p for p in products if str(p.get('id')) != str(product_id)]
             else:
@@ -1660,10 +1535,10 @@ def admin_update_order_status(order_id):
                 f"{SUPABASE_URL}/rest/v1/orders?order_id=eq.{order_id}",
                 headers=SUPABASE_HEADERS,
                 json={'status': new_status},
-                timeout=5
+                timeout=10
             )
             if response.status_code in [200, 204]:
-                orders = load_orders()
+                orders = load_json('orders.json')
                 if isinstance(orders, list):
                     for order in orders:
                         if order.get('order_id') == order_id:
@@ -1672,12 +1547,14 @@ def admin_update_order_status(order_id):
                     save_json('orders.json', orders)
                 return jsonify({'success': True})
         else:
-            orders = load_orders()
+            orders = load_json('orders.json')
             if isinstance(orders, list):
                 for order in orders:
                     if order.get('order_id') == order_id:
                         order['status'] = new_status
                         break
+            else:
+                orders = []
             save_json('orders.json', orders)
             return jsonify({'success': True})
         
@@ -1685,18 +1562,15 @@ def admin_update_order_status(order_id):
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
-# ================================================================
-# ===== ERROR HANDLERS =====
-# ================================================================
-
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
-
-@app.errorhandler(500)
-def internal_server_error(e):
-    print(f"500 Error: {e}")
-    return render_template('500.html'), 500
+@app.route('/cart-count', methods=['GET'])
+def cart_count():
+    """Get cart count for header"""
+    try:
+        cart = get_cart()
+        count = sum(cart.values()) if cart and isinstance(cart, dict) else 0
+        return jsonify({'count': count})
+    except Exception as e:
+        return jsonify({'count': 0})
 
 # ================================================================
 # ===== RUN APP =====
