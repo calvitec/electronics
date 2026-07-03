@@ -21,14 +21,12 @@ IS_VERCEL = 'VERCEL' in os.environ or 'NOW' in os.environ
 if IS_VERCEL:
     UPLOAD_FOLDER = '/tmp/static/uploads'
     STATIC_FOLDER = '/tmp/static'
-    JSON_FOLDER = '/tmp'
 else:
     UPLOAD_FOLDER = 'static/uploads'
     STATIC_FOLDER = 'static'
-    JSON_FOLDER = '.'
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-MAX_CONTENT_LENGTH = 5 * 1024 * 1024
+MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB max file size
 
 try:
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -82,26 +80,18 @@ except Exception as e:
     print("📁 Using JSON storage")
 
 # ===== JSON FALLBACK =====
-def get_json_path(filename):
-    return os.path.join(JSON_FOLDER, filename)
-
 def load_json(file_path):
     try:
-        full_path = get_json_path(file_path)
-        if os.path.exists(full_path):
-            with open(full_path, 'r') as f:
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as f:
                 return json.load(f)
-        # Create empty file
-        with open(full_path, 'w') as f:
-            json.dump([], f)
         return []
     except:
         return []
 
 def save_json(file_path, data):
     try:
-        full_path = get_json_path(file_path)
-        with open(full_path, 'w') as f:
+        with open(file_path, 'w') as f:
             json.dump(data, f, indent=2)
         return True
     except:
@@ -152,7 +142,7 @@ def load_product_by_id(product_id):
                     return data[0]
         except:
             pass
-    products = load_products()
+    products = load_json('products.json')
     for product in products:
         if str(product.get('id')) == str(product_id):
             return product
@@ -171,7 +161,7 @@ def load_products_by_category(category):
                 return response.json()
         except:
             pass
-    products = load_products()
+    products = load_json('products.json')
     return [p for p in products if p.get('category') == category]
 
 def load_bundles():
@@ -358,14 +348,21 @@ def save_order_to_db(order_data):
 def save_order_to_json(order_data):
     """Save order to JSON file (used as backup on every order)"""
     try:
-        orders = load_json('orders.json')
-        if not isinstance(orders, list):
-            orders = []
+        orders = []
+        if os.path.exists('orders.json'):
+            with open('orders.json', 'r') as f:
+                try:
+                    orders = json.load(f)
+                    if not isinstance(orders, list):
+                        orders = []
+                except:
+                    orders = []
         
         orders = [o for o in orders if o.get('order_id') != order_data.get('order_id')]
         orders.insert(0, order_data)
         
-        save_json('orders.json', orders)
+        with open('orders.json', 'w') as f:
+            json.dump(orders, f, indent=2)
         
         print(f"✅ Order saved to JSON: {order_data.get('order_id')}")
         return True
